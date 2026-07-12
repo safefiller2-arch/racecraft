@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#071016" />
+  <title>Racecraft — Anticipation Trainer</title>
+  <style>
+    :root {
+      --bg: #071016;
+      --panel: rgba(9, 17, 23, .86);
+      --panel-strong: rgba(7, 13, 18, .96);
+      --line: rgba(255,255,255,.12);
+      --muted: #9fb0bc;
+      --text: #f5f7f8;
+      --cyan: #4ee6cf;
+      --yellow: #ffd45f;
+      --red: #ff5c6a;
+      --shadow: 0 24px 90px rgba(0,0,0,.46);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--bg); color:var(--text); }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overscroll-behavior:none;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    #game { position:fixed; inset:0; width:100%; height:100%; display:block; background:#071016; }
+
+    .grain {
+      pointer-events:none;
+      position:fixed; inset:0; z-index:5; opacity:.12; mix-blend-mode:soft-light;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.24) 0 .55px, transparent .75px),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,.18) 0 .55px, transparent .75px);
+      background-size:7px 7px, 11px 11px;
+    }
+
+    #hud {
+      position:fixed; z-index:10; inset:max(12px, env(safe-area-inset-top)) 14px auto 14px;
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:start; gap:12px;
+      pointer-events:none;
+      transition:opacity .25s ease, transform .25s ease;
+    }
+    #hud.hidden { opacity:0; transform:translateY(-10px); }
+
+    .hud-card {
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(9,18,24,.88), rgba(4,10,14,.72));
+      backdrop-filter:blur(16px) saturate(135%);
+      -webkit-backdrop-filter:blur(16px) saturate(135%);
+      box-shadow:0 14px 45px rgba(0,0,0,.28);
+      border-radius:16px;
+    }
+
+    #scenarioCard { padding:10px 13px; min-width:210px; justify-self:start; }
+    #scenarioKicker { font-size:10px; font-weight:900; letter-spacing:.2em; color:var(--cyan); text-transform:uppercase; }
+    #scenarioName { margin-top:3px; font-size:15px; font-weight:850; letter-spacing:.015em; white-space:nowrap; }
+
+    #speedCard { padding:8px 16px 9px; text-align:center; min-width:108px; justify-self:center; }
+    #speedValue { font-size:29px; line-height:1; font-weight:950; font-variant-numeric:tabular-nums; letter-spacing:-.05em; }
+    #speedUnit { margin-top:2px; font-size:9px; letter-spacing:.22em; color:var(--muted); font-weight:850; }
+
+    #scoreCard { padding:10px 13px; min-width:178px; justify-self:end; text-align:right; }
+    .score-row { display:flex; justify-content:flex-end; align-items:center; gap:10px; }
+    #sessionScore { font-size:17px; font-weight:900; font-variant-numeric:tabular-nums; }
+    #streak { color:var(--yellow); font-size:12px; font-weight:850; }
+    #modeLabel { margin-top:3px; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.16em; }
+
+    #miniControls {
+      position:fixed; z-index:12; right:14px; top:calc(max(12px, env(safe-area-inset-top)) + 84px);
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .icon-btn {
+      width:42px; height:42px; border-radius:14px; border:1px solid var(--line);
+      color:white; background:rgba(7,14,19,.72); backdrop-filter:blur(12px);
+      display:grid; place-items:center; font-size:17px; cursor:pointer;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      transition:transform .12s ease, background .12s ease;
+    }
+    .icon-btn:active { transform:scale(.94); background:rgba(30,49,58,.82); }
+
+    #coach {
+      position:fixed; z-index:11; left:50%; transform:translateX(-50%);
+      bottom:calc(24px + env(safe-area-inset-bottom));
+      width:min(680px, calc(100% - 30px));
+      border:1px solid var(--line); border-radius:20px;
+      padding:12px 16px;
+      background:linear-gradient(180deg, rgba(7,15,20,.88), rgba(4,9,13,.86));
+      backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%);
+      box-shadow:0 18px 70px rgba(0,0,0,.4);
+      display:flex; align-items:center; gap:12px;
+      pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+    }
+    #coach.hidden { opacity:0; transform:translate(-50%, 12px); }
+    #coachPulse { width:9px; height:9px; flex:0 0 9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 0 rgba(78,230,207,.45); animation:pulse 1.8s infinite; }
+    #coachText { font-size:13px; font-weight:720; letter-spacing:.01em; line-height:1.35; }
+    #coachTag { margin-left:auto; font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.18em; font-weight:900; white-space:nowrap; }
+    @keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(78,230,207,.42); } 70% { box-shadow:0 0 0 12px rgba(78,230,207,0); } 100% { box-shadow:0 0 0 0 rgba(78,230,207,0); } }
+
+    #touchControls {
+      position:fixed; z-index:15; left:0; right:0; bottom:calc(12px + env(safe-area-inset-bottom));
+      display:none; grid-template-columns:1fr 1.15fr 1fr; gap:11px; padding:0 14px;
+    }
+    .touch-btn {
+      height:76px; border-radius:24px; border:1px solid rgba(255,255,255,.13);
+      background:linear-gradient(180deg, rgba(15,29,36,.88), rgba(7,14,18,.92));
+      color:white; font-size:24px; font-weight:950; display:grid; place-items:center;
+      box-shadow:0 18px 45px rgba(0,0,0,.32); -webkit-tap-highlight-color:transparent;
+    }
+    .touch-btn.brake { color:#ffdee2; background:linear-gradient(180deg, rgba(76,26,34,.9), rgba(31,11,16,.94)); }
+    .touch-btn.active { transform:translateY(2px) scale(.98); filter:brightness(1.18); }
+    .touch-label { display:block; font-size:9px; letter-spacing:.18em; margin-top:3px; opacity:.64; }
+
+    .screen {
+      position:fixed; z-index:20; inset:0; display:grid; place-items:center;
+      padding:max(22px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom));
+      background:radial-gradient(circle at 50% 22%, rgba(32,87,94,.18), transparent 42%), rgba(2,7,10,.50);
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      transition:opacity .28s ease, visibility .28s ease;
+    }
+    .screen.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+
+    .panel {
+      width:min(760px, 100%); border-radius:30px; border:1px solid rgba(255,255,255,.14);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.035), transparent 34%),
+        linear-gradient(180deg, rgba(10,20,26,.96), rgba(4,10,14,.98));
+      box-shadow:var(--shadow); overflow:hidden;
+    }
+
+    #menuPanel { padding:clamp(24px, 5vw, 48px); position:relative; }
+    #menuPanel::before {
+      content:""; position:absolute; inset:-120px -120px auto auto; width:320px; height:320px; border-radius:50%;
+      background:radial-gradient(circle, rgba(78,230,207,.18), transparent 68%); pointer-events:none;
+    }
+    .eyebrow { color:var(--cyan); text-transform:uppercase; letter-spacing:.24em; font-size:11px; font-weight:950; }
+    h1 { margin:11px 0 8px; font-size:clamp(36px, 7vw, 68px); line-height:.92; letter-spacing:-.065em; font-weight:1000; max-width:680px; }
+    h1 span { display:block; color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.62); text-stroke:1px rgba(255,255,255,.62); }
+    .lede { color:#b9c6ce; font-size:clamp(14px, 2.4vw, 18px); line-height:1.55; max-width:650px; }
+
+    .feature-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:24px 0; }
+    .feature { border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.025); padding:13px; border-radius:18px; }
+    .feature b { display:block; font-size:12px; margin-bottom:4px; }
+    .feature span { color:var(--muted); font-size:11px; line-height:1.35; }
+
+    .difficulty-title { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.2em; font-weight:900; margin-bottom:9px; }
+    .difficulty-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .difficulty {
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.025); color:white;
+      padding:14px; border-radius:18px; text-align:left; cursor:pointer; transition:.16s ease;
+    }
+    .difficulty:hover { transform:translateY(-2px); border-color:rgba(78,230,207,.34); }
+    .difficulty.selected { border-color:rgba(78,230,207,.75); background:rgba(78,230,207,.08); box-shadow:inset 0 0 0 1px rgba(78,230,207,.12); }
+    .difficulty b { display:block; font-size:13px; }
+    .difficulty span { display:block; margin-top:4px; color:var(--muted); font-size:10px; line-height:1.35; }
+
+    .menu-actions { display:flex; align-items:center; gap:14px; margin-top:22px; }
+    .primary {
+      flex:1; min-height:58px; border:0; border-radius:18px; cursor:pointer; color:#061113;
+      background:linear-gradient(135deg, #77f7df, #4bcbd4); font-weight:1000; letter-spacing:.06em; text-transform:uppercase;
+      box-shadow:0 14px 40px rgba(78,230,207,.22); transition:transform .15s ease, filter .15s ease;
+    }
+    .primary:hover { transform:translateY(-2px); filter:brightness(1.05); }
+    .primary:active { transform:translateY(1px); }
+    .key-hint { color:var(--muted); font-size:10px; line-height:1.45; min-width:150px; }
+
+    #briefPanel { width:min(560px, 100%); padding:30px; text-align:center; }
+    #briefIndex { color:var(--cyan); font-size:10px; letter-spacing:.23em; font-weight:950; text-transform:uppercase; }
+    #briefTitle { margin:8px 0 10px; font-size:clamp(28px,6vw,48px); font-weight:1000; letter-spacing:-.05em; }
+    #briefSubtitle { margin:0 auto; max-width:460px; color:#b7c3ca; line-height:1.5; font-size:14px; }
+    #briefHint { margin:19px auto 0; max-width:430px; padding:12px 14px; border-radius:15px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03); color:#e8f1f2; font-size:12px; }
+    #countdown { margin-top:24px; font-variant-numeric:tabular-nums; font-size:12px; font-weight:900; letter-spacing:.18em; color:var(--yellow); }
+
+    #resultPanel { width:min(650px, 100%); padding:30px; }
+    #resultKicker { font-size:10px; color:var(--cyan); text-transform:uppercase; letter-spacing:.23em; font-weight:950; }
+    #resultTitle { margin:7px 0 3px; font-size:clamp(31px,6vw,52px); letter-spacing:-.055em; font-weight:1000; }
+    #resultSummary { color:#b9c5cc; font-size:14px; line-height:1.5; }
+    #resultScore { margin:19px 0 15px; font-size:56px; font-weight:1000; letter-spacing:-.065em; font-variant-numeric:tabular-nums; }
+    #resultScore small { font-size:13px; color:var(--muted); letter-spacing:.18em; margin-left:8px; }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .metric { border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:12px 10px; background:rgba(255,255,255,.025); }
+    .metric span { display:block; color:var(--muted); font-size:9px; text-transform:uppercase; letter-spacing:.15em; font-weight:900; }
+    .metric b { display:block; margin-top:5px; font-size:21px; font-variant-numeric:tabular-nums; }
+    #resultInsight { margin-top:13px; padding:13px 14px; border-radius:15px; border-left:3px solid var(--cyan); background:rgba(78,230,207,.055); font-size:12px; line-height:1.5; color:#d8e4e7; }
+    .result-actions { display:flex; gap:10px; margin-top:18px; }
+    .secondary {
+      min-height:50px; padding:0 18px; border-radius:16px; border:1px solid rgba(255,255,255,.13);
+      background:rgba(255,255,255,.035); color:white; font-weight:850; cursor:pointer;
+    }
+
+    #pausePanel { padding:30px; text-align:center; width:min(420px,100%); }
+    #pausePanel h2 { margin:0 0 8px; font-size:36px; letter-spacing:-.04em; }
+    #pausePanel p { color:var(--muted); font-size:13px; }
+
+    #flash { position:fixed; z-index:30; inset:0; pointer-events:none; opacity:0; background:rgba(255,55,70,.55); mix-blend-mode:screen; }
+    #flash.hit { animation:hitFlash .5s ease-out; }
+    @keyframes hitFlash { 0% { opacity:.85; } 100% { opacity:0; } }
+
+    @media (max-width: 760px), (pointer:coarse) {
+      #touchControls { display:grid; }
+      #coach { bottom:calc(102px + env(safe-area-inset-bottom)); }
+      #scenarioCard { min-width:0; max-width:44vw; }
+      #scenarioName { overflow:hidden; text-overflow:ellipsis; }
+      #scoreCard { min-width:0; }
+      #modeLabel { display:none; }
+      #miniControls { top:calc(max(12px, env(safe-area-inset-top)) + 78px); }
+      .feature-row { grid-template-columns:1fr; }
+      .difficulty-grid { grid-template-columns:1fr; }
+      .menu-actions { flex-direction:column; align-items:stretch; }
+      .key-hint { min-width:0; text-align:center; }
+      .metrics { grid-template-columns:repeat(2,1fr); }
+      #menuPanel { max-height:calc(100vh - 24px); overflow:auto; }
+      #speedCard { min-width:78px; padding:8px 10px; }
+      #speedValue { font-size:24px; }
+      #hud { gap:6px; }
+    }
+
+    @media (max-height: 690px) {
+      .feature-row { display:none; }
+      #menuPanel { padding:24px; }
+      h1 { font-size:42px; }
+      .lede { font-size:13px; }
+      .difficulty-grid { margin-bottom:0; }
+      #resultPanel { padding:22px; }
+      #resultScore { font-size:43px; margin:12px 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" aria-label="Racecraft anticipation training game"></canvas>
+  <div class="grain"></div>
+  <div id="flash"></div>
+
+  <div id="hud" class="hidden">
+    <div id="scenarioCard" class="hud-card">
+      <div id="scenarioKicker">Drill 01</div>
+      <div id="scenarioName">Accordion</div>
+    </div>
+    <div id="speedCard" class="hud-card">
+      <div id="speedValue">182</div>
+      <div id="speedUnit">MPH</div>
+    </div>
+    <div id="scoreCard" class="hud-card">
+      <div class="score-row"><span id="streak">×0 clean</span><span id="sessionScore">0000</span></div>
+      <div id="modeLabel">League difficulty</div>
+    </div>
+  </div>
+
+  <div id="miniControls">
+    <button id="soundBtn" class="icon-btn" aria-label="Toggle sound">♪</button>
+    <button id="pauseBtn" class="icon-btn" aria-label="Pause">Ⅱ</button>
+  </div>
+
+  <div id="coach" class="hidden">
+    <div id="coachPulse"></div>
+    <div id="coachText">Eyes up. Read the pack before it moves.</div>
+    <div id="coachTag">Spotter</div>
+  </div>
+
+  <div id="touchControls">
+    <button id="leftBtn" class="touch-btn" aria-label="Steer left">◀<span class="touch-label">LEFT</span></button>
+    <button id="brakeBtn" class="touch-btn brake" aria-label="Brake">▼<span class="touch-label">LIFT / BRAKE</span></button>
+    <button id="rightBtn" class="touch-btn" aria-label="Steer right">▶<span class="touch-label">RIGHT</span></button>
+  </div>
+
+  <div id="menuScreen" class="screen">
+    <div id="menuPanel" class="panel">
+      <div class="eyebrow">Racecraft // Anticipation Lab</div>
+      <h1>SEE IT <span>BEFORE IT HAPPENS.</span></h1>
+      <p class="lede">Short, repeatable traffic drills for reading check-ups, blocks, spins, and lane collapses—without wasting twenty full races.</p>
+
+      <div class="feature-row">
+        <div class="feature"><b>Read the first clue</b><span>Brake lights, closing rate, yaw, and tiny lane drift.</span></div>
+        <div class="feature"><b>Choose early</b><span>Lift, brake, or place the car before the incident starts.</span></div>
+        <div class="feature"><b>Keep momentum</b><span>Clean avoidance matters. So does not overreacting.</span></div>
+      </div>
+
+      <div class="difficulty-title">Cue visibility</div>
+      <div class="difficulty-grid">
+        <button class="difficulty" data-mode="rookie"><b>Rookie</b><span>Long cue window, stronger coach hints.</span></button>
+        <button class="difficulty selected" data-mode="league"><b>League</b><span>Realistic timing and subtle warnings.</span></button>
+        <button class="difficulty" data-mode="expert"><b>Expert</b><span>Late, faint cues. No live hinting.</span></button>
+      </div>
+
+      <div class="menu-actions">
+        <button id="startBtn" class="primary">Start the drill</button>
+        <div class="key-hint">A / D or ← / → to steer<br>S / ↓ / Space to lift and brake</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="briefScreen" class="screen hidden">
+    <div id="briefPanel" class="panel">
+      <div id="briefIndex">Drill 01 of endless</div>
+      <div id="briefTitle">Accordion</div>
+      <p id="briefSubtitle">The first car to react is not always the car directly ahead.</p>
+      <div id="briefHint">Watch the brake lights two rows forward, not just the bumper in front of you.</div>
+      <div id="countdown">ROLLING IN 2.0</div>
+    </div>
+  </div>
+
+  <div id="resultScreen" class="screen hidden">
+    <div id="resultPanel" class="panel">
+      <div id="resultKicker">Clean read</div>
+      <div id="resultTitle">You saw it early.</div>
+      <div id="resultSummary">Lifted before the lane stacked up and kept the car underneath you.</div>
+      <div id="resultScore">842 <small>POINTS</small></div>
+      <div class="metrics">
+        <div class="metric"><span>Read</span><b id="metricRead">92</b></div>
+        <div class="metric"><span>Clean</span><b id="metricClean">100</b></div>
+        <div class="metric"><span>Momentum</span><b id="metricMomentum">76</b></div>
+        <div class="metric"><span>Discipline</span><b id="metricDiscipline">84</b></div>
+      </div>
+      <div id="resultInsight">You reacted to the far car’s brake lights 0.46 seconds before the near car checked up.</div>
+      <div class="result-actions">
+        <button id="nextBtn" class="primary">Next situation</button>
+        <button id="retryBtn" class="secondary">Retry</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pauseScreen" class="screen hidden">
+    <div id="pausePanel" class="panel">
+      <div class="eyebrow">Session held</div>
+      <h2>Paused</h2>
+      <p>Press P, Escape, or the button below to get rolling again.</p>
+      <button id="resumeBtn" class="primary">Resume</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const canvas = $('game');
+  const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+
+  const ui = {
+    menu: $('menuScreen'), brief: $('briefScreen'), result: $('resultScreen'), pause: $('pauseScreen'),
+    hud: $('hud'), coach: $('coach'), coachText: $('coachText'), coachTag: $('coachTag'),
+    scenarioKicker: $('scenarioKicker'), scenarioName: $('scenarioName'), speed: $('speedValue'),
+    sessionScore: $('sessionScore'), streak: $('streak'), modeLabel: $('modeLabel'),
+    briefIndex: $('briefIndex'), briefTitle: $('briefTitle'), briefSubtitle: $('briefSubtitle'), briefHint: $('briefHint'), countdown: $('countdown'),
+    resultKicker: $('resultKicker'), resultTitle: $('resultTitle'), resultSummary: $('resultSummary'), resultScore: $('resultScore'),
+    metricRead: $('metricRead'), metricClean: $('metricClean'), metricMomentum: $('metricMomentum'), metricDiscipline: $('metricDiscipline'),
+    resultInsight: $('resultInsight'), flash: $('flash'), soundBtn: $('soundBtn')
+  };
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const invLerp = (a, b, v) => clamp((v - a) / (b - a), 0, 1);
+  const smoothstep = (a, b, v) => { const t = invLerp(a, b, v); return t * t * (3 - 2 * t); };
+  const approach = (v, target, amount) => v < target ? Math.min(v + amount, target) : Math.max(v - amount, target);
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const choose = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const pad = (n, len = 4) => Math.max(0, Math.round(n)).toString().padStart(len, '0');
+
+  const palettes = [
+    ['#e63f46','#ffe66a'], ['#2368d8','#f6f9ff'], ['#20a477','#f7d04a'], ['#f37d24','#162b3c'],
+    ['#6c43d8','#efedf8'], ['#d9d9dc','#e13d49'], ['#111923','#48d9df'], ['#efb72f','#d12f3f'],
+    ['#ee5fa4','#202532'], ['#2f343e','#9af3df'], ['#f2f2f2','#2776d9'], ['#b91f30','#11161d']
+  ];
+
+  const modeConfig = {
+    rookie: { cue: 1.75, coach: true, cueGlow: 1, steering: 1.05, label: 'Rookie difficulty' },
+    league: { cue: 1.10, coach: true, cueGlow: .55, steering: 1, label: 'League difficulty' },
+    expert: { cue: .68, coach: false, cueGlow: .22, steering: .96, label: 'Expert difficulty' }
+  };
+
+  class AudioEngine {
+    constructor() {
+      this.ctx = null;
+      this.master = null;
+      this.engineOsc = null;
+      this.engineGain = null;
+      this.enabled = true;
+    }
+    start() {
+      if (this.ctx) { this.ctx.resume(); return; }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = .22;
+      this.master.connect(this.ctx.destination);
+
+      this.engineOsc = this.ctx.createOscillator();
+      this.engineOsc.type = 'sawtooth';
+      this.engineGain = this.ctx.createGain();
+      this.engineGain.gain.value = .045;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 470;
+      this.engineOsc.connect(filter);
+      filter.connect(this.engineGain);
+      this.engineGain.connect(this.master);
+      this.engineOsc.frequency.value = 88;
+      this.engineOsc.start();
+    }
+    setSpeed(mph, brake = 0) {
+      if (!this.ctx || !this.enabled) return;
+      const now = this.ctx.currentTime;
+      const f = 72 + mph * .63 + Math.sin(performance.now() * .014) * 2.5;
+      this.engineOsc.frequency.setTargetAtTime(f, now, .06);
+      this.engineGain.gain.setTargetAtTime(.026 + mph / 9000 - brake * .009, now, .08);
+    }
+    tone(freq, duration = .12, type = 'sine', volume = .16) {
+      if (!this.ctx || !this.enabled) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, this.ctx.currentTime + duration);
+      osc.connect(gain); gain.connect(this.master);
+      osc.start(); osc.stop(this.ctx.currentTime + duration);
+    }
+    crash() {
+      if (!this.ctx || !this.enabled) return;
+      const length = Math.floor(this.ctx.sampleRate * .35);
+      const buffer = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.2);
+      const src = this.ctx.createBufferSource(); src.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 1200;
+      const gain = this.ctx.createGain(); gain.gain.value = .55;
+      src.connect(filter); filter.connect(gain); gain.connect(this.master); src.start();
+      this.tone(58, .28, 'square', .24);
+    }
+    toggle() {
+      this.enabled = !this.enabled;
+      if (this.master) this.master.gain.setTargetAtTime(this.enabled ? .22 : .0001, this.ctx.currentTime, .03);
+      return this.enabled;
+    }
+  }
+
+  class Particle {
+    constructor(x, y, type = 'smoke', power = 1) {
+      this.x = x; this.y = y; this.type = type;
+      this.life = this.maxLife = type === 'spark' ? rand(.22,.48) : rand(.55,1.2);
+      this.vx = type === 'spark' ? rand(-190,190) * power : rand(-24,24);
+      this.vy = type === 'spark' ? rand(-170,70) * power : rand(24,95);
+      this.size = type === 'spark' ? rand(1.4,3.2) : rand(10,24) * power;
+      this.rot = rand(0,Math.PI*2);
+    }
+    update(dt) {
+      this.life -= dt;
+      this.x += this.vx * dt; this.y += this.vy * dt;
+      if (this.type === 'spark') this.vy += 420 * dt;
+      else { this.vx *= Math.pow(.92,dt*60); this.size += 19*dt; }
+    }
+    draw(ctx) {
+      const a = clamp(this.life / this.maxLife, 0, 1);
+      if (this.type === 'spark') {
+        ctx.save(); ctx.globalAlpha = a;
+        ctx.strokeStyle = a > .45 ? '#fff4b0' : '#ff8c38'; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.moveTo(this.x,this.y); ctx.lineTo(this.x-this.vx*.025,this.y-this.vy*.025); ctx.stroke(); ctx.restore();
+      } else {
+        ctx.save(); ctx.globalAlpha = a * .24;
+        const g = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.size);
+        g.addColorStop(0,'rgba(232,239,241,.9)'); g.addColorStop(1,'rgba(100,116,123,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.restore();
+      }
+    }
+  }
+
+  class Car {
+    constructor(opts = {}) {
+      const pal = opts.palette || choose(palettes);
+      this.id = opts.id || `car-${Math.random().toString(36).slice(2)}`;
+      this.lane = opts.lane ?? 1;
+      this.targetLane = this.lane;
+      this.y = opts.y ?? 200;
+      this.speed = opts.speed ?? 180;
+      this.targetSpeed = this.speed;
+      this.accel = opts.accel ?? 50;
+      this.lateralRate = opts.lateralRate ?? .52;
+      this.baseColor = opts.baseColor || pal[0];
+      this.accent = opts.accent || pal[1];
+      this.number = opts.number ?? Math.floor(rand(2,99));
+      this.brake = false;
+      this.angle = 0;
+      this.extraAngle = 0;
+      this.spinRate = 0;
+      this.collision = opts.collision !== false;
+      this.alpha = 1;
+      this.role = opts.role || 'traffic';
+      this.highlight = 0;
+      this.damage = 0;
+      this.laneVelocity = 0;
+      this.lastLane = this.lane;
+      this.smokeClock = 0;
+      this.widthScale = opts.widthScale ?? 1;
+      this.label = opts.label || '';
+    }
+  }
+
+  class Game {
+    constructor() {
+      this.W = innerWidth; this.H = innerHeight; this.dpr = 1;
+      this.mode = 'league'; this.config = modeConfig.league;
+      this.state = 'menu'; this.prevState = 'menu'; this.paused = false;
+      this.time = 0; this.last = performance.now(); this.roadScroll = 0; this.roadPhase = .9;
+      this.player = null; this.cars = []; this.particles = []; this.skids = [];
+      this.keys = Object.create(null); this.touch = {left:false,right:false,brake:false};
+      this.audio = new AudioEngine();
+      this.scenario = null; this.scenarioIndex = 0; this.lastScenarioId = '';
+      this.scenarioElapsed = 0; this.briefElapsed = 0; this.resultDelay = 0;
+      this.sessionScore = 0; this.cleanStreak = 0;
+      this.firstResponse = null; this.responsePulse = 0; this.collision = false; this.offtrack = 0;
+      this.avgSpeed = 0; this.sampleTime = 0; this.brakeTime = 0; this.steerEnergy = 0; this.directionChanges = 0; this.lastSteerSign = 0;
+      this.resultData = null; this.pendingEnd = false;
+      this.cameraShake = 0; this.cameraX = 0; this.cameraY = 0;
+      this.ambientFlash = 0; this.coachState = '';
+      this.sessionSeed = Math.random() * 1000;
+      this.demoAutostart = new URLSearchParams(location.search).has('autostart');
+      this.resize(); this.bind(); this.resetPlayer(); this.renderStaticScene();
+      requestAnimationFrame((t)=>this.loop(t));
+      if (this.demoAutostart) setTimeout(()=>this.startSession(), 250);
+    }
+
+    resize() {
+      this.W = innerWidth; this.H = innerHeight; this.dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(this.W * this.dpr); canvas.height = Math.round(this.H * this.dpr);
+      canvas.style.width = `${this.W}px`; canvas.style.height = `${this.H}px`;
+      ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+      if (this.player) this.player.y = this.playerY();
+    }
+
+    bind() {
+      addEventListener('resize', ()=>this.resize());
+      addEventListener('keydown', (e)=>{
+        if (['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Space'].includes(e.code)) e.preventDefault();
+        this.keys[e.code] = true;
+        if (e.code === 'Enter' && this.state === 'result') this.nextScenario();
+        if (e.code === 'KeyR' && (this.state === 'running' || this.state === 'result')) this.retryScenario();
+        if (e.code === 'KeyP' || e.code === 'Escape') this.togglePause();
+        if (e.code === 'KeyM') this.toggleSound();
+      }, {passive:false});
+      addEventListener('keyup', (e)=>{ this.keys[e.code] = false; });
+      addEventListener('blur', ()=>{ if (this.state === 'running') this.setPaused(true); });
+
+      document.querySelectorAll('.difficulty').forEach(btn=>btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.difficulty').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected'); this.mode = btn.dataset.mode; this.config = modeConfig[this.mode];
+      }));
+      $('startBtn').addEventListener('click', ()=>this.startSession());
+      $('nextBtn').addEventListener('click', ()=>this.nextScenario());
+      $('retryBtn').addEventListener('click', ()=>this.retryScenario());
+      $('pauseBtn').addEventListener('click', ()=>this.togglePause());
+      $('resumeBtn').addEventListener('click', ()=>this.setPaused(false));
+      $('soundBtn').addEventListener('click', ()=>this.toggleSound());
+
+      const bindTouch = (id, key) => {
+        const el = $(id);
+        const on = (e)=>{ e.preventDefault(); this.touch[key] = true; el.classList.add('active'); this.audio.start(); };
+        const off = (e)=>{ e.preventDefault(); this.touch[key] = false; el.classList.remove('active'); };
+        el.addEventListener('pointerdown', on); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); el.addEventListener('pointerleave', off);
+      };
+      bindTouch('leftBtn','left'); bindTouch('rightBtn','right'); bindTouch('brakeBtn','brake');
+    }
+
+    toggleSound() {
+      this.audio.start(); const enabled = this.audio.toggle(); ui.soundBtn.textContent = enabled ? '♪' : '×';
+    }
+
+    togglePause() {
+      if (!['running','briefing'].includes(this.state) && !this.paused) return;
+      this.setPaused(!this.paused);
+    }
+    setPaused(v) {
+      this.paused = v;
+      ui.pause.classList.toggle('hidden', !v);
+      if (this.audio.ctx) this.audio.ctx[v ? 'suspend' : 'resume']();
+    }
+
+    playerY() { return this.H * (this.H < 720 ? .73 : .77); }
+    trackHalf(y) { return clamp(this.W * .405, 214, 510) * lerp(.78,1.02,y/this.H); }
+    laneWidth(y) { return this.trackHalf(y) * 2 / 3; }
+    roadCenter(y) {
+      const u = 1 - y / this.H;
+      const amp = clamp(this.W * .12, 42, 150);
+      return this.W/2 + Math.sin(this.roadPhase + u*1.16) * amp * (u*.78 + .08) + Math.sin(this.roadPhase*.43 + u*2.4) * amp*.12*u;
+    }
+    laneX(lane, y) { return this.roadCenter(y) + (lane - 1) * this.laneWidth(y); }
+    roadAngle(y) {
+      const y0 = clamp(y-8,0,this.H), y1 = clamp(y+8,0,this.H);
+      return -Math.atan2(this.roadCenter(y1)-this.roadCenter(y0), y1-y0);
+    }
+    laneBounds() { return [-.42, 2.42]; }
+
+    resetPlayer() {
+      this.player = {
+        lane: 1, y: this.playerY(), speed: 182, targetSpeed: 188, steer:0, brake:0,
+        baseColor:'#12a7c1', accent:'#f4dc55', number:33, widthScale:1.05,
+        x:0, angle:0, damage:0, glow:1
+      };
+    }
+
+    startSession() {
+      this.audio.start();
+      this.sessionScore = 0; this.cleanStreak = 0; this.scenarioIndex = 0; this.lastScenarioId = '';
+      ui.menu.classList.add('hidden'); ui.result.classList.add('hidden');
+      ui.hud.classList.remove('hidden'); ui.modeLabel.textContent = this.config.label;
+      this.nextScenario(true);
+    }
+
+    pickScenario() {
+      let pool = scenarioFactories.filter(s=>s.id !== this.lastScenarioId);
+      const factory = choose(pool);
+      this.lastScenarioId = factory.id;
+      return factory.create(this);
+    }
+
+    nextScenario(first = false) {
+      this.scenarioIndex += 1;
+      this.scenario = this.pickScenario();
+      this.prepareScenario();
+      this.state = 'briefing'; this.briefElapsed = 0;
+      ui.result.classList.add('hidden'); ui.brief.classList.remove('hidden'); ui.coach.classList.add('hidden');
+      ui.briefIndex.textContent = `Drill ${String(this.scenarioIndex).padStart(2,'0')} • ${this.mode}`;
+      ui.briefTitle.textContent = this.scenario.name;
+      ui.briefSubtitle.textContent = this.scenario.subtitle;
+      ui.briefHint.textContent = this.mode === 'expert' ? 'No live hint. Find the first clue and commit early.' : this.scenario.hint;
+      ui.scenarioKicker.textContent = `Drill ${String(this.scenarioIndex).padStart(2,'0')}`;
+      ui.scenarioName.textContent = this.scenario.name;
+      if (!first) this.audio.tone(520,.12,'sine',.12);
+    }
+
+    retryScenario() {
+      if (!this.scenario) return;
+      this.scenario = scenarioFactories.find(s=>s.id===this.scenario.id).create(this);
+      this.prepareScenario(); this.state='briefing'; this.briefElapsed=0;
+      ui.result.classList.add('hidden'); ui.brief.classList.remove('hidden'); ui.coach.classList.add('hidden');
+      ui.briefTitle.textContent=this.scenario.name; ui.briefSubtitle.textContent=this.scenario.subtitle;
+      ui.briefHint.textContent=this.mode==='expert'?'No live hint. Find the first clue and commit early.':this.scenario.hint;
+    }
+
+    prepareScenario() {
+      this.resetPlayer(); this.player.lane = this.scenario.playerLane ?? 1;
+      this.cars=[]; this.particles=[]; this.skids=[]; this.scenarioElapsed=0; this.collision=false; this.pendingEnd=false;
+      this.firstResponse=null; this.responsePulse=0; this.offtrack=0; this.avgSpeed=0; this.sampleTime=0; this.brakeTime=0; this.steerEnergy=0; this.directionChanges=0; this.lastSteerSign=0;
+      this.cameraShake=0; this.ambientFlash=0; this.coachState='';
+      this.scenario.setup(this);
+      this.updateHud();
+    }
+
+    addCar(opts) { const c=new Car(opts); this.cars.push(c); return c; }
+    car(id) { return this.cars.find(c=>c.id===id); }
+
+    beginRun() {
+      this.state='running'; this.scenarioElapsed=0; ui.brief.classList.add('hidden'); ui.coach.classList.remove('hidden');
+      this.setCoach(this.mode==='expert' ? 'Find the first clue. Do not wait for the crash.' : this.scenario.liveHint, 'Spotter');
+    }
+
+    setCoach(text, tag='Spotter') {
+      ui.coachText.textContent=text; ui.coachTag.textContent=tag;
+    }
+
+    noteResponse(type) {
+      if (this.firstResponse || this.state!=='running') return;
+      const t=this.scenarioElapsed;
+      // A small grace window prevents touch-screen steering ramp and frame timing
+      // from turning a reaction on the first visible cue into a false early flag.
+      const inputGrace=.18;
+      const beforeCue=t < this.scenario.cueStart;
+      const premature=t < this.scenario.cueStart-inputGrace;
+      this.firstResponse={type,t,premature,beforeCue}; this.responsePulse=.7;
+      const dt=t-this.scenario.hazardAt;
+      if (premature) {
+        this.setCoach(`${type==='brake'?'LIFT':'MOVE '+type.toUpperCase()} • correct only if the clue develops`, 'Committed early');
+        this.audio.tone(260,.08,'triangle',.08);
+      } else if (dt<0) {
+        this.setCoach(`${type==='brake'?'EARLY LIFT':type.toUpperCase()} • ${(Math.abs(dt)).toFixed(2)}s before the move`, 'Read');
+        this.audio.tone(780,.09,'sine',.10);
+      } else {
+        this.setCoach(`${type==='brake'?'BRAKE':type.toUpperCase()} • ${dt.toFixed(2)}s after the move`, 'Reaction');
+        this.audio.tone(430,.08,'triangle',.09);
+      }
+    }
+
+    updateInput(dt) {
+      const left=this.keys.ArrowLeft||this.keys.KeyA||this.touch.left;
+      const right=this.keys.ArrowRight||this.keys.KeyD||this.touch.right;
+      const brake=this.keys.ArrowDown||this.keys.KeyS||this.keys.Space||this.touch.brake;
+      const throttle=this.keys.ArrowUp||this.keys.KeyW;
+      const raw=(right?1:0)-(left?1:0);
+      this.player.steer=approach(this.player.steer,raw,dt*5.8);
+      const prevBrake=this.player.brake;
+      this.player.brake=approach(this.player.brake,brake?1:0,dt*(brake?7:4.5));
+      if (prevBrake<.28&&this.player.brake>=.28) this.noteResponse('brake');
+      if (Math.abs(this.player.steer)>.42) this.noteResponse(this.player.steer<0?'left':'right');
+
+      const sign=Math.abs(this.player.steer)>.3?Math.sign(this.player.steer):0;
+      if (sign&&this.lastSteerSign&&sign!==this.lastSteerSign) this.directionChanges++;
+      if (sign) this.lastSteerSign=sign;
+
+      const steerRate=1.15*this.config.steering*(.82+this.player.speed/420);
+      this.player.lane+=this.player.steer*steerRate*dt;
+      const [lo,hi]=this.laneBounds();
+      if (this.player.lane<lo||this.player.lane>hi) this.offtrack+=dt;
+      this.player.lane=clamp(this.player.lane,-.58,2.58);
+
+      const autoTarget=throttle?195:188;
+      const target=lerp(autoTarget,116,this.player.brake);
+      this.player.targetSpeed=target;
+      const accel=this.player.speed>target?84:30;
+      this.player.speed=approach(this.player.speed,target,accel*dt);
+      if (this.player.lane<-.38||this.player.lane>2.38) this.player.speed=approach(this.player.speed,132,58*dt);
+      this.player.speed=clamp(this.player.speed,80,202);
+
+      this.brakeTime+=this.player.brake*dt;
+      this.steerEnergy+=Math.abs(this.player.steer)*dt;
+      this.avgSpeed+=this.player.speed*dt; this.sampleTime+=dt;
+    }
+
+    updateCars(dt) {
+      for (const c of this.cars) {
+        c.speed=approach(c.speed,c.targetSpeed,c.accel*dt);
+        const oldLane=c.lane;
+        c.lane=approach(c.lane,c.targetLane,c.lateralRate*dt);
+        c.laneVelocity=(c.lane-oldLane)/Math.max(dt,.001);
+        c.extraAngle+=c.spinRate*dt;
+        c.angle=this.roadAngle(c.y)+c.extraAngle-clamp(c.laneVelocity*.12,-.22,.22);
+        c.y+=(this.player.speed-c.speed)*3.28*dt;
+        c.highlight=approach(c.highlight,0,dt*1.5);
+        if (Math.abs(c.spinRate)>.15) {
+          c.smokeClock-=dt;
+          if (c.smokeClock<=0) { c.smokeClock=.055; const x=this.laneX(c.lane,c.y); this.particles.push(new Particle(x+rand(-16,16),c.y+22,'smoke',.8)); }
+        }
+      }
+    }
+
+    updateScenario(dt) {
+      this.scenarioElapsed+=dt;
+      this.scenario.update(this,dt,this.scenarioElapsed);
+
+      if (this.scenarioElapsed>=this.scenario.cueStart && this.coachState!=='cue') {
+        this.coachState='cue';
+        if (this.mode==='rookie') this.setCoach(this.scenario.cueText,'First clue');
+      }
+      if (this.scenarioElapsed>=this.scenario.hazardAt && this.coachState!=='hazard' && !this.firstResponse) {
+        this.coachState='hazard';
+        if (this.mode!=='expert') this.setCoach('NOW — choose a lane or get out of the throttle.','Danger');
+      }
+
+      this.checkCollisions();
+      if (!this.pendingEnd && (this.scenarioElapsed>=this.scenario.duration || this.collision)) {
+        this.pendingEnd=true; this.resultDelay=this.collision?.7:0.32;
+      }
+      if (this.pendingEnd) {
+        this.resultDelay-=dt;
+        if (this.resultDelay<=0) this.finishScenario();
+      }
+    }
+
+    checkCollisions() {
+      if (this.collision) return;
+      const px=this.laneX(this.player.lane,this.player.y), py=this.player.y;
+      const pw=this.laneWidth(py)*.45, ph=pw*1.72;
+      for (const c of this.cars) {
+        if (!c.collision || c.alpha<.3 || c.y<-150 || c.y>this.H+150) continue;
+        const cx=this.laneX(c.lane,c.y), cw=this.laneWidth(c.y)*.44*c.widthScale, ch=cw*1.72;
+        const dx=Math.abs(px-cx), dy=Math.abs(py-c.y);
+        const lat=(pw+cw)*.38, lon=(ph+ch)*.38;
+        if (dx<lat && dy<lon) {
+          this.collision=true; c.damage=1; this.player.damage=1; this.player.speed*=.68; c.speed*=.82;
+          this.cameraShake=1; this.ambientFlash=1; this.audio.crash();
+          ui.flash.classList.remove('hit'); void ui.flash.offsetWidth; ui.flash.classList.add('hit');
+          if (navigator.vibrate) navigator.vibrate([45,30,70]);
+          for (let i=0;i<34;i++) this.particles.push(new Particle((px+cx)/2+rand(-12,12),(py+c.y)/2+rand(-10,10),'spark',rand(.65,1.2)));
+          for (let i=0;i<12;i++) this.particles.push(new Particle((px+cx)/2+rand(-18,18),(py+c.y)/2+rand(-10,10),'smoke',rand(.7,1.2)));
+          this.setCoach('CONTACT — the move was already happening before you reacted.','Spotter');
+          break;
+        }
+      }
+    }
+
+    finishScenario() {
+      if (this.state!=='running') return;
+      this.state='result'; this.pendingEnd=false;
+      const r=this.evaluate(); this.resultData=r;
+      this.sessionScore+=r.points;
+      if (!this.collision) this.cleanStreak++; else this.cleanStreak=0;
+      this.updateHud(); this.showResult(r);
+      ui.coach.classList.add('hidden'); ui.result.classList.remove('hidden');
+      this.audio.tone(this.collision?140:640,.22,this.collision?'square':'sine',.16);
+    }
+
+    evaluate() {
+      const s=this.scenario;
+      const response=this.firstResponse;
+      const avg=this.sampleTime?this.avgSpeed/this.sampleTime:0;
+      const accepted=response && s.accepted.includes(response.type);
+      let read=18, reactionLabel='No committed response';
+      if (response) {
+        const rel=response.t-s.hazardAt;
+        if (response.premature) {
+          const earlyBy=Math.max(0,s.cueStart-response.t);
+          if (accepted) {
+            read=Math.round(clamp(48-earlyBy*8,30,48));
+            reactionLabel=`Chose the correct ${response.type==='brake'?'lift':response.type+'-side escape'} ${earlyBy.toFixed(2)}s before the first usable clue`;
+          } else {
+            read=24; reactionLabel=`${response.type==='brake'?'Lifted':'Moved '+response.type} before the first usable clue`;
+          }
+        } else if (accepted && rel<=0) {
+          const early=clamp((-rel)/this.config.cue,0,1);
+          read=Math.round(82+18*early); reactionLabel=`${response.type==='brake'?'Lifted':'Moved '+response.type} ${Math.abs(rel).toFixed(2)}s before the hazard`;
+        } else if (accepted) {
+          read=Math.round(78-55*clamp(rel/1.15,0,1)); reactionLabel=`Correct choice, ${rel.toFixed(2)}s after the hazard began`;
+        } else {
+          read=Math.round(rel<=0?42:25); reactionLabel=`The first move (${response.type}) did not match the safest read`;
+        }
+      }
+      if (this.collision) read=Math.min(read,38);
+      const clean=this.collision?0:Math.round(clamp(100-this.offtrack*24,35,100));
+      const momentum=Math.round(clamp(32+(avg-120)*1.05-this.brakeTime*5.2,20,100));
+      const earlyPenalty=response?.premature ? (accepted?12:24) : 0;
+      const discipline=Math.round(clamp(102-this.steerEnergy*8.2-this.directionChanges*14-this.offtrack*16-earlyPenalty,15,100));
+      let points=Math.round(read*3.5+clean*2.8+momentum*1.8+discipline*1.6);
+      if (!this.collision && accepted && response && response.t<s.hazardAt) points+=90;
+      if (this.collision) points=Math.round(points*.54);
+      points=clamp(points,60,999);
+
+      let title, kicker, summary, insight;
+      if (this.collision) {
+        kicker='Contact'; title='The pack got there first.';
+        summary='You reached the incident after the usable escape window had already started closing.';
+        insight=`${reactionLabel}. ${s.failInsight}`;
+      } else if (response?.premature && accepted) {
+        kicker='Correct escape, early'; title='Right answer—before the evidence.';
+        summary='You chose a safe opening and stayed clean, but committed before the first visible cue this drill is testing.';
+        insight=`${reactionLabel}. The lane choice was valid; wait for the first yaw, brake-light, or closing-rate clue so the move is a read rather than a guess.`;
+      } else if (read>=82) {
+        kicker='Clean read'; title='You saw it early.';
+        summary='The car was placed before the danger fully developed, with room left to keep racing.';
+        insight=`${reactionLabel}. ${s.winInsight}`;
+      } else if (read>=55) {
+        kicker='Clean save'; title='Safe, but a beat late.';
+        summary='You avoided contact, though the response cost more speed and track position than it needed to.';
+        insight=`${reactionLabel}. Try committing on the first visible clue.`;
+      } else {
+        kicker='Survived'; title='Clean result, uncertain read.';
+        summary='You made it through, but the first action was either late, unnecessary, or pointed at the wrong opening.';
+        insight=`${reactionLabel}. ${s.failInsight}`;
+      }
+      return {read,clean,momentum,discipline,points,title,kicker,summary,insight};
+    }
+
+    showResult(r) {
+      ui.resultKicker.textContent=r.kicker; ui.resultTitle.textContent=r.title; ui.resultSummary.textContent=r.summary;
+      ui.resultScore.innerHTML=`${r.points} <small>POINTS</small>`;
+      ui.metricRead.textContent=r.read; ui.metricClean.textContent=r.clean; ui.metricMomentum.textContent=r.momentum; ui.metricDiscipline.textContent=r.discipline;
+      ui.resultInsight.textContent=r.insight;
+    }
+
+    updateHud() {
+      ui.speed.textContent=Math.round(this.player?.speed||0);
+      ui.sessionScore.textContent=pad(this.sessionScore,4);
+      ui.streak.textContent=`×${this.cleanStreak} clean`;
+    }
+
+    update(dt) {
+      this.time+=dt; this.roadScroll+=this.player.speed*1.35*dt;
+      this.roadPhase+=dt*(.045+this.player.speed*.00022);
+      this.responsePulse=approach(this.responsePulse,0,dt*1.7);
+      this.ambientFlash=approach(this.ambientFlash,0,dt*2.8);
+
+      if (this.state==='briefing') {
+        this.briefElapsed+=dt;
+        const remain=Math.max(0,2.0-this.briefElapsed);
+        ui.countdown.textContent=`ROLLING IN ${remain.toFixed(1)}`;
+        this.player.speed=approach(this.player.speed,182,20*dt);
+        this.updateCars(dt*.35);
+        if (this.briefElapsed>=2) this.beginRun();
+      } else if (this.state==='running') {
+        this.updateInput(dt); this.updateCars(dt); this.updateScenario(dt);
+      } else if (this.state==='menu') {
+        this.player.speed=182+Math.sin(this.time*.7)*2;
+        this.player.lane=1+Math.sin(this.time*.35)*.07;
+        this.updateAmbientDemo(dt);
+      } else if (this.state==='result') {
+        this.player.speed=approach(this.player.speed,142,40*dt); this.updateCars(dt*.32);
+      }
+
+      this.audio.setSpeed(this.player.speed,this.player.brake||0);
+      this.cameraShake=approach(this.cameraShake,0,dt*4.6);
+      for (const p of this.particles) p.update(dt);
+      this.particles=this.particles.filter(p=>p.life>0);
+      this.skids=this.skids.filter(s=>this.time-s.t<4.8);
+      this.updateHud();
+    }
+
+    updateAmbientDemo(dt) {
+      if (!this.cars.length) {
+        this.cars=[
+          new Car({lane:.08,y:this.H*.31,speed:180,number:8}), new Car({lane:1.02,y:this.H*.42,speed:178,number:41}),
+          new Car({lane:1.95,y:this.H*.26,speed:181,number:19}), new Car({lane:.1,y:this.H*.58,speed:183,number:72}),
+          new Car({lane:2.02,y:this.H*.55,speed:179,number:6})
+        ];
+      }
+      for (const c of this.cars) {
+        c.y+=(this.player.speed-c.speed)*2*dt;
+        if (c.y>this.H+130) c.y=-120;
+        if (c.y<-140) c.y=this.H+110;
+        c.angle=this.roadAngle(c.y);
+      }
+    }
+
+    loop(t) {
+      const dt=clamp((t-this.last)/1000,0,.033); this.last=t;
+      if (!this.paused) this.update(dt);
+      this.draw(); requestAnimationFrame((tt)=>this.loop(tt));
+    }
+
+    renderStaticScene() { this.draw(); }
+
+    makeTrackPath(extra=0) {
+      const step=32, left=[], right=[];
+      for (let y=-40;y<=this.H+40;y+=step) {
+        const half=this.trackHalf(y)+extra; const c=this.roadCenter(y);
+        left.push([c-half,y]); right.push([c+half,y]);
+      }
+      ctx.beginPath(); ctx.moveTo(left[0][0],left[0][1]);
+      for (let i=1;i<left.length;i++) ctx.lineTo(left[i][0],left[i][1]);
+      for (let i=right.length-1;i>=0;i--) ctx.lineTo(right[i][0],right[i][1]);
+      ctx.closePath();
+    }
+
+    draw() {
+      const W=this.W,H=this.H;
+      ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+      ctx.clearRect(0,0,W,H);
+      const shake=this.cameraShake*this.cameraShake;
+      this.cameraX=rand(-7,7)*shake; this.cameraY=rand(-8,8)*shake;
+      ctx.save(); ctx.translate(this.cameraX,this.cameraY);
+      this.drawWorld();
+      ctx.restore();
+      if (this.ambientFlash>0) { ctx.fillStyle=`rgba(255,80,90,${this.ambientFlash*.14})`; ctx.fillRect(0,0,W,H); }
+    }
+
+    drawWorld() {
+      const W=this.W,H=this.H;
+      const sky=ctx.createLinearGradient(0,0,0,H);
+      sky.addColorStop(0,'#0b1f25'); sky.addColorStop(.52,'#102128'); sky.addColorStop(1,'#081116');
+      ctx.fillStyle=sky; ctx.fillRect(-20,-20,W+40,H+40);
+
+      this.drawStadium();
+
+      this.makeTrackPath(42); ctx.fillStyle='#d9d8d2'; ctx.fill();
+      this.makeTrackPath(31); ctx.fillStyle='#3e4d50'; ctx.fill();
+      this.makeTrackPath(22); ctx.fillStyle='#aeb5b5'; ctx.fill();
+      this.makeTrackPath(15); ctx.fillStyle='#232b2f'; ctx.fill();
+      this.makeTrackPath(0);
+      const asphalt=ctx.createLinearGradient(0,0,this.W,0);
+      asphalt.addColorStop(0,'#2b3135'); asphalt.addColorStop(.5,'#242a2e'); asphalt.addColorStop(1,'#30363a');
+      ctx.fillStyle=asphalt; ctx.fill();
+
+      this.drawAsphaltTexture();
+      this.drawLaneLines();
+      this.drawWallDetails();
+      this.drawSkids();
+
+      const all=[...this.cars].sort((a,b)=>a.y-b.y);
+      for (const c of all) this.drawCar(c,false);
+      this.drawCar(this.player,true);
+      for (const p of this.particles) p.draw(ctx);
+      this.drawSpeedVignette();
+    }
+
+    drawStadium() {
+      const W=this.W,H=this.H;
+      const speed=this.player.speed;
+      ctx.save();
+      for (let side=-1;side<=1;side+=2) {
+        const baseX=side<0?0:W;
+        ctx.fillStyle='rgba(6,12,15,.92)';
+        ctx.fillRect(side<0?0:W-90,0,90,H);
+        const offset=(this.roadScroll*1.9)%48;
+        for (let y=-48+offset;y<H+48;y+=48) {
+          const x=baseX+side*(-18-rand(0,15));
+          ctx.fillStyle='rgba(172,220,222,.12)'; ctx.fillRect(x-side*5,y,side*5,24);
+          if ((Math.floor((y-offset)/48)+ (side>0?1:0))%3===0) {
+            ctx.fillStyle='rgba(255,239,180,.7)'; ctx.beginPath(); ctx.arc(baseX+side*(-43),y+9,2.1,0,Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      const grad=ctx.createRadialGradient(W*.5,H*.3,20,W*.5,H*.4,Math.max(W,H)*.8);
+      grad.addColorStop(0,'rgba(80,177,184,.06)'); grad.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+      if (speed>160) {
+        ctx.globalAlpha=clamp((speed-150)/90,0,.28);
+        ctx.strokeStyle='rgba(176,229,228,.55)'; ctx.lineWidth=1;
+        for (let i=0;i<28;i++) {
+          const x=(i*97+this.sessionSeed*13)%W; const y=(i*173+this.roadScroll*5)%H;
+          if (Math.abs(x-W/2)<this.trackHalf(y)+60) continue;
+          ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+rand(20,70)); ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    drawAsphaltTexture() {
+      ctx.save();
+      this.makeTrackPath(0); ctx.clip();
+      ctx.globalAlpha=.14;
+      const offset=(this.roadScroll*2.2)%54;
+      for (let y=-54+offset;y<this.H+54;y+=54) {
+        for (let i=0;i<15;i++) {
+          const x=(i*137+y*3.7+this.sessionSeed*33)%this.W;
+          ctx.fillStyle=i%3?'#fff':'#000'; ctx.fillRect(x,y+(i%5)*4,rand(.6,1.7),rand(1,4));
+        }
+      }
+      const g=ctx.createLinearGradient(0,0,this.W,0);
+      g.addColorStop(0,'rgba(0,0,0,.18)'); g.addColorStop(.2,'rgba(255,255,255,.02)'); g.addColorStop(.5,'rgba(0,0,0,.1)'); g.addColorStop(.8,'rgba(255,255,255,.02)'); g.addColorStop(1,'rgba(0,0,0,.18)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,this.W,this.H);
+      ctx.restore();
+    }
+
+    drawLaneLines() {
+      ctx.save();
+      const period=78, dash=39, offset=this.roadScroll%period;
+      ctx.lineCap='round'; ctx.lineWidth=2.2; ctx.strokeStyle='rgba(240,239,222,.72)';
+      for (const boundary of [.5,1.5]) {
+        for (let y=-period+offset;y<this.H+period;y+=period) {
+          const y1=y,y2=y+dash;
+          ctx.beginPath(); ctx.moveTo(this.laneX(boundary,y1),y1); ctx.lineTo(this.laneX(boundary,y2),y2); ctx.stroke();
+        }
+      }
+      ctx.lineWidth=3.2; ctx.strokeStyle='rgba(248,249,244,.75)';
+      for (const edge of [-.5,2.5]) {
+        ctx.beginPath();
+        for (let y=-20;y<=this.H+20;y+=24) { const x=this.laneX(edge,y); if(y===-20)ctx.moveTo(x,y);else ctx.lineTo(x,y); }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    drawWallDetails() {
+      ctx.save();
+      const offset=(this.roadScroll*1.15)%92;
+      for (let y=-100+offset;y<this.H+100;y+=92) {
+        for (const edge of [-.5,2.5]) {
+          const side=edge<0?-1:1;
+          const x=this.laneX(edge,y)+side*25;
+          ctx.save(); ctx.translate(x,y); ctx.rotate(this.roadAngle(y));
+          ctx.fillStyle=((Math.floor((y-offset)/92)&1)===0)?'#e9edf0':'#df3d46';
+          ctx.fillRect(-7,-26,14,52); ctx.restore();
+        }
+      }
+      ctx.restore();
+    }
+
+    drawSkids() {
+      ctx.save(); ctx.lineCap='round';
+      for (const s of this.skids) {
+        const a=clamp(1-(this.time-s.t)/4.8,0,1)*.32;
+        ctx.strokeStyle=`rgba(8,10,11,${a})`; ctx.lineWidth=s.w;
+        ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke();
+      }
+      ctx.restore();
+      if (this.player.brake>.72 && this.player.speed>145 && this.state==='running') {
+        const x=this.laneX(this.player.lane,this.player.y); const w=this.laneWidth(this.player.y)*.45;
+        this.skids.push({x1:x-w*.27,y1:this.player.y+22,x2:x-w*.27-this.player.steer*2,y2:this.player.y+35,w:2,t:this.time});
+        this.skids.push({x1:x+w*.27,y1:this.player.y+22,x2:x+w*.27-this.player.steer*2,y2:this.player.y+35,w:2,t:this.time});
+      }
+    }
+
+    carDimensions(y,scale=1) {
+      const w=clamp(this.laneWidth(y)*.45*scale,36,78); return [w,w*1.72];
+    }
+
+    drawCar(car,isPlayer) {
+      const y=car.y; if (y<-140||y>this.H+150) return;
+      const lane=car.lane; const x=this.laneX(lane,y);
+      const [w,h]=this.carDimensions(y,car.widthScale||1);
+      const angle=isPlayer ? this.roadAngle(y)-this.player.steer*.075 : car.angle;
+      const base=isPlayer?this.player.baseColor:car.baseColor;
+      const accent=isPlayer?this.player.accent:car.accent;
+      const number=isPlayer?this.player.number:car.number;
+      const brake=isPlayer?this.player.brake>.4:car.brake;
+      const damage=isPlayer?this.player.damage:car.damage;
+
+      ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
+      ctx.globalAlpha=car.alpha??1;
+
+      ctx.save(); ctx.translate(3,7); ctx.shadowColor='rgba(0,0,0,.55)'; ctx.shadowBlur=14; ctx.fillStyle='rgba(0,0,0,.48)';
+      ctx.beginPath(); ctx.roundRect(-w*.47,-h*.48,w*.94,h*.96,w*.24); ctx.fill(); ctx.restore();
+
+      if ((car.highlight||0)>0 || (isPlayer&&this.responsePulse>0)) {
+        const glow=isPlayer?this.responsePulse:(car.highlight||0)*this.config.cueGlow;
+        ctx.save(); ctx.globalAlpha=glow*.55; ctx.shadowColor=isPlayer?'#4ee6cf':'#ffd45f'; ctx.shadowBlur=26; ctx.strokeStyle=isPlayer?'#4ee6cf':'#ffd45f'; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.roundRect(-w*.52,-h*.53,w*1.04,h*1.06,w*.26); ctx.stroke(); ctx.restore();
+      }
+
+      ctx.fillStyle='#090d10';
+      ctx.fillRect(-w*.57,-h*.30,w*.15,h*.25); ctx.fillRect(w*.42,-h*.30,w*.15,h*.25);
+      ctx.fillRect(-w*.57,h*.09,w*.15,h*.25); ctx.fillRect(w*.42,h*.09,w*.15,h*.25);
+
+      const bodyGrad=ctx.createLinearGradient(-w*.5,0,w*.5,0);
+      bodyGrad.addColorStop(0,'rgba(0,0,0,.28)'); bodyGrad.addColorStop(.23,base); bodyGrad.addColorStop(.74,base); bodyGrad.addColorStop(1,'rgba(255,255,255,.18)');
+      ctx.fillStyle=bodyGrad; ctx.strokeStyle='rgba(255,255,255,.24)'; ctx.lineWidth=1.2;
+      ctx.beginPath();
+      ctx.moveTo(-w*.28,-h*.50); ctx.quadraticCurveTo(-w*.47,-h*.47,-w*.50,-h*.31);
+      ctx.lineTo(-w*.48,h*.32); ctx.quadraticCurveTo(-w*.45,h*.48,-w*.27,h*.50);
+      ctx.lineTo(w*.27,h*.50); ctx.quadraticCurveTo(w*.45,h*.48,w*.48,h*.32);
+      ctx.lineTo(w*.50,-h*.31); ctx.quadraticCurveTo(w*.47,-h*.47,w*.28,-h*.50); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle=accent; ctx.globalAlpha=.95;
+      ctx.beginPath(); ctx.moveTo(-w*.45,-h*.08); ctx.lineTo(w*.45,-h*.22); ctx.lineTo(w*.47,-h*.09); ctx.lineTo(-w*.45,h*.06); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha=1;
+
+      ctx.fillStyle='rgba(5,14,20,.92)';
+      ctx.beginPath(); ctx.roundRect(-w*.31,-h*.26,w*.62,h*.25,w*.08); ctx.fill();
+      const glass=ctx.createLinearGradient(0,-h*.26,0,h*.12); glass.addColorStop(0,'rgba(138,213,227,.48)'); glass.addColorStop(1,'rgba(11,28,39,.9)');
+      ctx.fillStyle=glass; ctx.beginPath(); ctx.roundRect(-w*.29,-h*.235,w*.58,h*.20,w*.06); ctx.fill();
+      ctx.fillStyle='rgba(6,14,18,.88)'; ctx.beginPath(); ctx.roundRect(-w*.29,h*.08,w*.58,h*.18,w*.055); ctx.fill();
+
+      ctx.fillStyle='rgba(255,255,255,.12)'; ctx.beginPath(); ctx.roundRect(-w*.24,-h*.015,w*.48,h*.24,w*.055); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.94)'; ctx.font=`900 ${Math.max(12,w*.28)}px ui-sans-serif,system-ui`; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.strokeStyle='rgba(0,0,0,.8)'; ctx.lineWidth=Math.max(2,w*.045); ctx.strokeText(String(number),0,h*.105); ctx.fillText(String(number),0,h*.105);
+
+      ctx.fillStyle='rgba(255,255,255,.72)'; ctx.fillRect(-w*.30,-h*.455,w*.6,h*.035);
+      ctx.fillStyle='#d8f5ff'; ctx.globalAlpha=.78; ctx.fillRect(-w*.31,-h*.43,w*.15,h*.045); ctx.fillRect(w*.16,-h*.43,w*.15,h*.045); ctx.globalAlpha=1;
+
+      if (brake) {
+        ctx.save(); ctx.shadowColor='#ff3347'; ctx.shadowBlur=18; ctx.fillStyle='#ff3046';
+        ctx.fillRect(-w*.32,h*.405,w*.18,h*.055); ctx.fillRect(w*.14,h*.405,w*.18,h*.055); ctx.restore();
+      } else {
+        ctx.fillStyle='#7d1822'; ctx.fillRect(-w*.32,h*.405,w*.18,h*.05); ctx.fillRect(w*.14,h*.405,w*.18,h*.05);
+      }
+
+      if (damage) {
+        ctx.strokeStyle='rgba(18,18,18,.85)'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(-w*.25,-h*.42); ctx.lineTo(w*.12,-h*.17); ctx.lineTo(-w*.08,h*.04); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    drawSpeedVignette() {
+      const g=ctx.createRadialGradient(this.W/2,this.H*.55,Math.min(this.W,this.H)*.22,this.W/2,this.H*.55,Math.max(this.W,this.H)*.72);
+      g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(.72,'rgba(0,0,0,.05)'); g.addColorStop(1,'rgba(0,0,0,.52)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,this.W,this.H);
+      const top=ctx.createLinearGradient(0,0,0,this.H*.3); top.addColorStop(0,'rgba(2,7,10,.34)'); top.addColorStop(1,'rgba(2,7,10,0)'); ctx.fillStyle=top; ctx.fillRect(0,0,this.W,this.H*.3);
+    }
+  }
+
+  const makeBase = (game, spec) => ({
+    ...spec,
+    cueStart: spec.hazardAt - game.config.cue,
+    accepted: spec.accepted || ['brake'],
+    duration: spec.duration || 8.7
+  });
+
+  const scenarioFactories = [
+    {
+      id:'accordion',
+      create(game) {
+        const s=makeBase(game,{
+          id:'accordion', name:'Accordion', subtitle:'The car directly ahead is often the second warning, not the first.',
+          hint:'Watch the brake lights two rows forward and compare closing speed.', liveHint:'Eyes through the windshield. Read two cars ahead.',
+          cueText:'Far car is checking up. The near bumper has not reacted yet.', hazardAt:3.75, accepted:['brake'], duration:8.6,
+          winInsight:'The earliest safe answer was a lift; lane changes were boxed in.', failInsight:'Look beyond the nearest bumper and react to the first brake-light chain.',
+          setup(g) {
+            g.addCar({id:'far',lane:1,y:g.H*.16,speed:178,number:17,baseColor:'#d43c43',accent:'#f0e45a'});
+            g.addCar({id:'near',lane:1,y:g.H*.38,speed:181,number:48,baseColor:'#f0f1f2',accent:'#e34046'});
+            g.addCar({id:'left',lane:.02,y:g.H*.48,speed:180,number:6,baseColor:'#2a66c7',accent:'#f4f4f2'});
+            g.addCar({id:'right',lane:1.98,y:g.H*.47,speed:182,number:24,baseColor:'#f18b27',accent:'#1b2934'});
+          },
+          update(g,dt,t) {
+            const far=g.car('far'), near=g.car('near'), left=g.car('left'), right=g.car('right');
+            if(t>=s.cueStart){ far.brake=true; far.targetSpeed=142; far.highlight=.38; }
+            if(t>=s.hazardAt-.16){ near.brake=true; near.targetSpeed=126; near.accel=94; near.highlight=.25; left.targetSpeed=156; right.targetSpeed=160; }
+            if(t>=6.4){ far.brake=false; near.brake=false; far.targetSpeed=176; near.targetSpeed=174; left.targetSpeed=178; right.targetSpeed=179; }
+          }
+        });
+        return s;
+      }
+    },
+    {
+      id:'closing-door',
+      create(game) {
+        const s=makeBase(game,{
+          id:'closing-door', name:'Closing Door', subtitle:'A block starts as body language before it becomes a lane change.',
+          hint:'Watch the right-front car’s nose and steering angle. The left lane is the clean escape.', liveHint:'Notice who is leaning toward your lane before they commit.',
+          cueText:'Right-front car is already rotating toward the center lane.', hazardAt:3.55, accepted:['left','brake'], duration:8.4,
+          winInsight:'You moved before the blocker occupied the lane, so the escape stayed wide.', failInsight:'Read the nose angle and tiny lateral drift—not the moment the whole car crosses the line.',
+          setup(g) {
+            g.addCar({id:'blocker',lane:1.93,y:g.H*.39,speed:173,number:11,baseColor:'#be2435',accent:'#f8f8f6',lateralRate:.24});
+            g.addCar({id:'rightbox',lane:2.02,y:g.H*.60,speed:181,number:4,baseColor:'#262d36',accent:'#59e0cf'});
+            g.addCar({id:'leftfar',lane:.03,y:g.H*.22,speed:179,number:88,baseColor:'#3c6ed7',accent:'#f1ca43'});
+            g.addCar({id:'centerfar',lane:1.02,y:g.H*.15,speed:181,number:29,baseColor:'#ef7e22',accent:'#192431'});
+          },
+          update(g,dt,t) {
+            const b=g.car('blocker');
+            if(t>=s.cueStart){ b.targetLane=1.67; b.extraAngle=-.035; b.highlight=.3; }
+            if(t>=s.hazardAt){ b.targetLane=1.00; b.lateralRate=.88; b.targetSpeed=158; b.brake=true; }
+            if(t>=6.2){ b.brake=false; b.targetSpeed=177; b.targetLane=.94; }
+          }
+        });
+        return s;
+      }
+    },
+    {
+      id:'snap-loose',
+      create(game) {
+        const s=makeBase(game,{
+          id:'snap-loose', name:'Snap Loose', subtitle:'The save is decided by the direction of the first yaw—not the smoke.',
+          hint:'Watch the lead car’s first yaw. Choose the space opposite the direction its mass is sliding—or lift if that lane is not clear.', liveHint:'Watch the rear of the lead car, not just its centerline.',
+          cueText:'Rear is stepping left. The right-side opening is about to grow.', hazardAt:3.45, accepted:['right','brake'], duration:8.1,
+          winInsight:'You chose the opening opposite the spin and avoided chasing the car’s current position.', failInsight:'When the rear steps left, project where the spinning car will finish—not where it is now.',
+          setup(g) {
+            g.addCar({id:'loose',lane:1,y:g.H*.35,speed:178,number:51,baseColor:'#f0b52e',accent:'#b72f3c',lateralRate:.52});
+            g.addCar({id:'leftlock',lane:.02,y:g.H*.49,speed:180,number:3,baseColor:'#d83a42',accent:'#f0dc5d'});
+            g.addCar({id:'rightfar',lane:2.03,y:g.H*.17,speed:181,number:77,baseColor:'#2870d9',accent:'#eef3f5'});
+          },
+          update(g,dt,t) {
+            const c=g.car('loose');
+            if(t>=s.cueStart && t<s.hazardAt){
+              c.extraAngle=Math.sin((t-s.cueStart)*18)*.035*(invLerp(s.cueStart,s.hazardAt,t)); c.highlight=.25;
+              if(Math.random()<dt*8){ const x=g.laneX(c.lane,c.y); g.particles.push(new Particle(x-10,c.y+30,'smoke',.45)); }
+            }
+            if(t>=s.hazardAt){ c.spinRate=-1.65; c.targetLane=.25; c.lateralRate=.72; c.targetSpeed=112; c.brake=true; }
+            if(t>=5.5){ c.spinRate=-.38; }
+          }
+        });
+        return s;
+      }
+    },
+    {
+      id:'blind-chain',
+      create(game) {
+        const s=makeBase(game,{
+          id:'blind-chain', name:'Blind Chain', subtitle:'The visible reaction can arrive after the useful braking window.',
+          hint:'Use closing rate and the far-left brake lights. Do not wait for the car in your lane.', liveHint:'Scan around the car ahead. The pack gives away the slowdown.',
+          cueText:'The outside row is losing speed. Your lane has not lit its brakes yet.', hazardAt:3.85, accepted:['brake','left'], duration:8.8,
+          winInsight:'You reacted to the pack’s compression instead of waiting for your lane to confirm it.', failInsight:'Track the whole row’s closing rate; a chain reaction telegraphs sideways before it reaches you.',
+          setup(g) {
+            g.addCar({id:'mask',lane:1,y:g.H*.40,speed:181,number:14,baseColor:'#eceeed',accent:'#2a71d0'});
+            g.addCar({id:'farleft',lane:.04,y:g.H*.20,speed:176,number:31,baseColor:'#272c36',accent:'#f05b91'});
+            g.addCar({id:'farright',lane:1.98,y:g.H*.18,speed:177,number:9,baseColor:'#e13f46',accent:'#f2df53'});
+            g.addCar({id:'leftnear',lane:.03,y:g.H*.54,speed:182,number:66,baseColor:'#2e9a78',accent:'#f0d34e'});
+          },
+          update(g,dt,t) {
+            const mask=g.car('mask'), fl=g.car('farleft'), fr=g.car('farright');
+            if(t>=s.cueStart){ fl.brake=true; fr.brake=true; fl.targetSpeed=137; fr.targetSpeed=144; fl.highlight=.28; fr.highlight=.22; }
+            if(t>=s.hazardAt-.05){ mask.brake=true; mask.targetSpeed=121; mask.accel=102; mask.highlight=.25; }
+            if(t>=6.5){ mask.brake=false; fl.brake=false; fr.brake=false; mask.targetSpeed=176; fl.targetSpeed=173; fr.targetSpeed=174; }
+          }
+        });
+        return s;
+      }
+    },
+    {
+      id:'three-wide',
+      create(game) {
+        const s=makeBase(game,{
+          id:'three-wide', name:'Three-Wide Pinch', subtitle:'Sometimes the fastest escape is to stop contesting the overlap.',
+          hint:'Both doors are closing. Lift and let the outside cars clear your front bumper.', liveHint:'You are the middle car. Read both side panels, not just the lane ahead.',
+          cueText:'Both adjacent cars are leaning inward. The middle lane is disappearing.', hazardAt:3.35, accepted:['brake'], duration:7.9,
+          winInsight:'The lift converted a three-wide squeeze into two cars clearing ahead of you.', failInsight:'When both sides are occupied, do not invent a lane—change the overlap by changing speed.',
+          setup(g) {
+            g.addCar({id:'leftpinch',lane:.02,y:g.H*.59,speed:181,number:20,baseColor:'#2d66c8',accent:'#f6f6f4',lateralRate:.18});
+            g.addCar({id:'rightpinch',lane:1.98,y:g.H*.58,speed:180,number:5,baseColor:'#e44549',accent:'#f2d85d',lateralRate:.18});
+            g.addCar({id:'lead',lane:1.02,y:g.H*.28,speed:179,number:42,baseColor:'#2fa27c',accent:'#f6ca3f'});
+          },
+          update(g,dt,t) {
+            const l=g.car('leftpinch'), r=g.car('rightpinch');
+            if(t>=s.cueStart){ l.targetLane=.20; r.targetLane=1.80; l.extraAngle=-.025; r.extraAngle=.025; l.highlight=.2; r.highlight=.2; }
+            if(t>=s.hazardAt){ l.targetLane=.58; r.targetLane=1.42; l.lateralRate=.62; r.lateralRate=.62; l.targetSpeed=186; r.targetSpeed=185; }
+            if(t>=5.4){ l.targetLane=.28; r.targetLane=1.72; }
+          }
+        });
+        return s;
+      }
+    }
+  ];
+
+  const game = new Game();
+})();
+</script>
+</body>
+</html>
