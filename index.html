@@ -1,0 +1,1397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"/>
+<meta name="theme-color" content="#071016"/>
+
+<!-- STANDALONE. Without these, iOS keeps the Safari address bar + toolbar, and
+     those sliding in and out are what was shoving the controls around. -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Racecraft"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFl0lEQVR4nO2dMW7UQBSGHYSEFAmFiiItXSgoqaj3BhyAa6TmGjkAN9iaipKCdLT0UaTUFI5Wq83+4/F4Zvze8/dVELB3/Pzt+70Te/bizbv3A8A5Xq09ALALcoAEOUCCHCBBDpAgB0iQAyTIARLkAAlygAQ5QIIcIEEOkCAHSJADJMgBEuQACXKABDlA8nrtAfTg8u1Vi90+PT602K0d6BwgQQ6QIAdIkAMk8eVodDXadM9GiC8HFIMcINnEPEcOHz5+Ov7r3z+/1xqJHegcIEEOkCAHSJADJMgBkuBytJ6nij0PFlwOWAJygAQ5QIIcIEEOkCAHSJADJMgBkshy9JmhCjwPFlkOWMhF4IXxu72noz7dROcACXKABDlAghwgQQ6QIAdIwsrRc24q6jxYWDlgOcgBEuQACXKABDlAghwgQQ6QIAdIYsrRf1Yq5DwYK/s8w8o+L4nZOaAKyAES5AAJcoAEOUCCHCAJKMdaUw7xpjoCygG1QA6QIAdIkAMkyAES5AAJcoAEOUASTY51Z6KCzYNFkwMqghwg4TbBZ67vbg9//vft+4ojsUO0BePKUv/Lrx8vf/jz89eCXUVaPI5YOW9G4ufbYdOdI/P0z2ohdI4I5DeGzbaQjcox93xv049QsZKTKQtPc07EhEmWbXWO5Q1gUy1kQ3LUOq/b8WMrctQ9oxvxI/41R9MTefYShGsOH7R+i8duIZHlKDhzBVPmgf2IGStlJ+xgxsLNw8RKQDlqNYzi/YSRI06s1DUj8fME46uHuR8sTufY3e8Ltpo0oCxi9je7gq2sEUSOAjNmNYYCRQL4ESFWWptR8P+H0k5mCt+do1GUKLYWMY47R2czirf120K8do7qUTJrHdKNXIL4k6NRw5i7SO0WIsZZrPSPkrr79BUxnjpH008lxctbB44YN52jw+fVMgJ/ynXQOfpEycKF8UNegliXo1vDqPKtCcEixnSsmI2Siq9uOWKMdo7+n0oqft9KmIixKMcqDaP6l/EEiBhzsVJghrWajhSMylrEGJJjd79f14zru9vjVTqWU+aHHUWsyFGmxVj9KndeHWtRRZFxVIdBzsKIH4auOWZV5Ljiy+WouHjLMcc3kxYf3YoYkmPIruBJ7ZbIMXnZuESRkzuNy45uRazESj4Va5fzgaLiYyl2znomtjrHkHx7qeJWXAdMUXd9sIJjXAVzcgyidomqzZWjuBnMVSTxAMvcY1wFi7HyskbdoiS9yGTTiLFmxmBTjmPKPgoqcszo6YdBIY4xKsdYtbq1y+8Z3fwY2hxpLSxec8xi+Tpg45XE2d+t5GyYxvVzs0Y7R0WWnOD0vwZefGEkuBzL3/pb9iNsrMzVYvJX9mWeESvmWN4w5m4VsoUElKOFGTnbxvMjVKw0/S1a2au4jpU4crRrGGfJfDnXcgSJlc5mTO4zRsT47hyXb6/6RIki59X9Ng/fcqRvn+n2DEtaEZtT4zk4jhUjZky+lpEbQgtw2Tkmy73Kc2+TEeOuhfiTw07DOEukiHEWK8bNmByDr4jxJId9M0bC+OEjVrxocYL3iHHQOZyaMfhvIdbl8GvGiGs/7MZKunD7m52jLyd4enyYPJxug8nHaOfwWMo06THbbCEW5Yhnxog7P2zFymSB6j5c341Zj9vbsd+QHHMbhlM5Rlx0R0OxkqiIkWJVxMXBGpJjEHWxU6y62D9YQ7Fy4NByKz5Zvzo5T9ybMmOwKccwDLv7fbpS1eWovtTkCen7wSaPdxVsxcoBg5Vqis3jNSoHWAA5QIIcIEEOkCAHSJADJC7lcDcDNvgcs0s5oA/IARLkAAlygAQ5QIIcIEEOkCAHSPzJ4XE2acTdyP3JAd1ADpAgB0iQAyTIARLkAAlygAQ5QOJMDnfzSCf4Gr8zOaAnyAES5ADJf1h3GtQxalblAAAAAElFTkSuQmCC"/>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Racecraft%22%2C%22short_name%22%3A%22Racecraft%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%23071016%22%2C%22theme_color%22%3A%22%23071016%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFl0lEQVR4nO2dMW7UQBSGHYSEFAmFiiItXSgoqaj3BhyAa6TmGjkAN9iaipKCdLT0UaTUFI5Wq83%2B4/F4Zvze8/dVELB3/Pzt%2B70Te/bizbv3A8A5Xq09ALALcoAEOUCCHCBBDpAgB0iQAyTIARLkAAlygAQ5QIIcIEEOkCAHSJADJMgBEuQACXKABDlA8nrtAfTg8u1Vi90%2BPT602K0d6BwgQQ6QIAdIkAMk8eVodDXadM9GiC8HFIMcINnEPEcOHz5%2BOv7r3z%2B/1xqJHegcIEEOkCAHSJADJMgBkuBytJ6nij0PFlwOWAJygAQ5QIIcIEEOkCAHSJADJMgBkshy9JmhCjwPFlkOWMhF4IXxu72noz7dROcACXKABDlAghwgQQ6QIAdIwsrRc24q6jxYWDlgOcgBEuQACXKABDlAghwgQQ6QIAdIYsrRf1Yq5DwYK/s8w8o%2BL4nZOaAKyAES5AAJcoAEOUCCHCAJKMdaUw7xpjoCygG1QA6QIAdIkAMkyAES5AAJcoAEOUASTY51Z6KCzYNFkwMqghwg4TbBZ67vbg9//vft%2B4ojsUO0BePKUv/Lrx8vf/jz89eCXUVaPI5YOW9G4ufbYdOdI/P0z2ohdI4I5DeGzbaQjcox93xv049QsZKTKQtPc07EhEmWbXWO5Q1gUy1kQ3LUOq/b8WMrctQ9oxvxI/41R9MTefYShGsOH7R%2Bi8duIZHlKDhzBVPmgf2IGStlJ%2BxgxsLNw8RKQDlqNYzi/YSRI06s1DUj8fME46uHuR8sTufY3e8Ltpo0oCxi9je7gq2sEUSOAjNmNYYCRQL4ESFWWptR8P%2BH0k5mCt%2Bdo1GUKLYWMY47R2czirf120K8do7qUTJrHdKNXIL4k6NRw5i7SO0WIsZZrPSPkrr79BUxnjpH008lxctbB44YN52jw%2BfVMgJ/ynXQOfpEycKF8UNegliXo1vDqPKtCcEixnSsmI2Siq9uOWKMdo7%2Bn0oqft9KmIixKMcqDaP6l/EEiBhzsVJghrWajhSMylrEGJJjd79f14zru9vjVTqWU%2BaHHUWsyFGmxVj9KndeHWtRRZFxVIdBzsKIH4auOWZV5Ljiy%2BWouHjLMcc3kxYf3YoYkmPIruBJ7ZbIMXnZuESRkzuNy45uRazESj4Va5fzgaLiYyl2znomtjrHkHx7qeJWXAdMUXd9sIJjXAVzcgyidomqzZWjuBnMVSTxAMvcY1wFi7HyskbdoiS9yGTTiLFmxmBTjmPKPgoqcszo6YdBIY4xKsdYtbq1y%2B8Z3fwY2hxpLSxec8xi%2BTpg45XE2d%2Bt5GyYxvVzs0Y7R0WWnOD0vwZefGEkuBzL3/pb9iNsrMzVYvJX9mWeESvmWN4w5m4VsoUElKOFGTnbxvMjVKw0/S1a2au4jpU4crRrGGfJfDnXcgSJlc5mTO4zRsT47hyXb6/6RIki59X9Ng/fcqRvn%2Bn2DEtaEZtT4zk4jhUjZky%2BlpEbQgtw2Tkmy73Kc2%2BTEeOuhfiTw07DOEukiHEWK8bNmByDr4jxJId9M0bC%2BOEjVrxocYL3iHHQOZyaMfhvIdbl8GvGiGs/7MZKunD7m52jLyd4enyYPJxug8nHaOfwWMo06THbbCEW5Yhnxog7P2zFymSB6j5c341Zj9vbsd%2BQHHMbhlM5Rlx0R0OxkqiIkWJVxMXBGpJjEHWxU6y62D9YQ7Fy4NByKz5Zvzo5T9ybMmOwKccwDLv7fbpS1eWovtTkCen7wSaPdxVsxcoBg5Vqis3jNSoHWAA5QIIcIEEOkCAHSJADJC7lcDcDNvgcs0s5oA/IARLkAAlygAQ5QIIcIEEOkCAHSPzJ4XE2acTdyP3JAd1ADpAgB0iQAyTIARLkAAlygAQ5QOJMDnfzSCf4Gr8zOaAnyAES5ADJf1h3GtQxalblAAAAAElFTkSuQmCC%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image/png%22%7D%5D%7D"/>
+
+<title>Racecraft</title>
+<style>
+:root{
+  --bg:#071016; --line:rgba(255,255,255,.12); --muted:#9fb0bc; --text:#f5f7f8;
+  --cyan:#4ee6cf; --yellow:#ffd45f; --red:#ff5c6a; --green:#7ef0a4;
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100dvh;margin:0;overflow:hidden;background:var(--bg);color:var(--text)}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  overscroll-behavior:none;touch-action:none;user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent}
+#game{position:fixed;inset:0;width:100%;height:100dvh;display:block;background:#071016;touch-action:none}
+
+#hud{position:fixed;z-index:10;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+#hud.hidden{opacity:0}
+.card{border:1px solid var(--line);border-radius:14px;padding:7px 12px;
+  background:linear-gradient(180deg,rgba(9,18,24,.88),rgba(4,10,14,.72));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#spd{font-size:24px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.unit{font-size:8px;letter-spacing:.2em;color:var(--muted);font-weight:800;margin-top:2px}
+.right{text-align:right}
+#sessScore{font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
+#streak{color:var(--yellow);font-size:11px;font-weight:800;margin-left:8px}
+#soundBtn{position:fixed;z-index:12;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  width:38px;height:38px;border-radius:12px;border:1px solid var(--line);color:#fff;
+  background:rgba(7,14,19,.6);display:grid;place-items:center;font-size:15px;cursor:pointer}
+
+.screen{position:fixed;z-index:20;inset:0;display:grid;place-items:center;
+  padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));
+  background:radial-gradient(circle at 50% 20%,rgba(32,87,94,.18),transparent 44%),rgba(2,7,10,.62);
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.hidden{display:none}
+.panel{width:min(620px,100%);border-radius:26px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(10,20,26,.97),rgba(4,10,14,.99));
+  box-shadow:0 24px 90px rgba(0,0,0,.5);padding:clamp(20px,5vw,34px)}
+
+h1{margin:0;font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:-.035em;line-height:.98}
+.sub{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+.eyebrow{font-size:9px;font-weight:900;letter-spacing:.24em;color:var(--cyan);text-transform:uppercase}
+
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.mode{padding:12px 8px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+  color:var(--text);cursor:pointer;text-align:center;font-weight:800;font-size:12px}
+.mode.on{border-color:var(--cyan);background:rgba(78,230,207,.10);color:var(--cyan)}
+.mode small{display:block;font-weight:600;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+
+button.cta{width:100%;margin-top:16px;padding:15px;border-radius:16px;border:none;cursor:pointer;
+  background:var(--cyan);color:#04121a;font-weight:900;font-size:15px;letter-spacing:.01em}
+button.ghost{width:100%;margin-top:8px;padding:12px;border-radius:14px;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:12px}
+
+.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;
+  padding-top:16px;border-top:1px solid var(--line)}
+.mstat b{display:block;font-size:19px;font-weight:900;font-variant-numeric:tabular-nums}
+.mstat span{font-size:9px;color:var(--muted);letter-spacing:.14em;font-weight:800;text-transform:uppercase}
+
+/* BRIEF: a lane and a countdown. That is all you get. */
+#count{font-size:clamp(64px,22vw,120px);font-weight:900;letter-spacing:-.05em;line-height:1;
+  color:var(--cyan);font-variant-numeric:tabular-nums;text-align:center}
+.briefline{text-align:center;margin-top:14px;color:var(--muted);font-size:12px;line-height:1.6}
+.briefline b{color:var(--text);font-weight:900;letter-spacing:.1em}
+
+.kicker{font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase}
+.kicker.good{color:var(--green)} .kicker.bad{color:var(--red)}
+#rName{margin-top:5px;font-size:clamp(24px,6.5vw,34px);font-weight:900;letter-spacing:-.025em}
+#rLesson{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.55}
+
+canvas.strip{width:100%;display:block;margin-top:16px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.02)}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:16px}
+.metric{padding:10px 6px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);text-align:center}
+.metric b{display:block;font-size:17px;font-weight:900;font-variant-numeric:tabular-nums}
+.metric span{font-size:8px;color:var(--muted);letter-spacing:.1em;font-weight:800;text-transform:uppercase}
+.metric.hero{border-color:rgba(78,230,207,.4);background:rgba(78,230,207,.07)}
+.metric.hero b{color:var(--cyan)}
+
+#rNote{margin-top:12px;font-size:12px;color:var(--text);font-weight:700;line-height:1.5}
+#rLatNote{margin-top:3px;font-size:10px;color:var(--muted)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;
+  padding-top:14px;border-top:1px solid var(--line)}
+.total b{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
+.total span{font-size:9px;color:var(--muted);letter-spacing:.18em;font-weight:800;text-transform:uppercase}
+
+.shead,.srow{display:grid;grid-template-columns:1.5fr 1fr .55fr .55fr .7fr;gap:8px;align-items:center}
+.shead{margin-top:18px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.shead div{font-size:8px;color:var(--muted);letter-spacing:.12em;font-weight:800;text-transform:uppercase}
+.srow{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.sname{font-size:12px;font-weight:800}
+.sname span{display:block;font-size:9px;color:var(--muted);font-weight:600;margin-top:2px}
+.sbar{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--cyan);border-radius:3px}
+.sval{font-size:11px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.sval.fa{color:var(--yellow)}
+
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="card"><div id="spd">180</div><div class="unit">MPH</div></div>
+  <div class="card right"><div><span id="sessScore">0</span><span id="streak">×0</span></div>
+    <div class="unit">SESSION</div></div>
+</div>
+<button id="soundBtn">🔊</button>
+
+<!-- MENU -->
+<div id="menuScreen" class="screen">
+  <div class="panel">
+    <div class="eyebrow">Anticipation Trainer</div>
+    <h1>Racecraft</h1>
+    <p class="sub">Five patterns. Randomised timing, randomised sides, randomised pack.
+      One in four is a feint that resolves into nothing — bail on it and it costs you.
+      You are told nothing before the drill and everything after it.</p>
+
+    <div class="modes">
+      <button class="mode" data-mode="rookie">Rookie<small>obvious tell · long lead</small></button>
+      <button class="mode on" data-mode="league">League<small>plain tell · normal lead</small></button>
+      <button class="mode" data-mode="expert">Expert<small>faint tell · short lead</small></button>
+    </div>
+
+    <div class="mstats">
+      <div class="mstat"><b id="menuRuns">0</b><span>Drills</span></div>
+      <div class="mstat"><b id="menuRT">—</b><span>Median RT</span></div>
+      <div class="mstat"><b id="menuBest">0</b><span>Best</span></div>
+    </div>
+
+    <button class="cta" id="startBtn">Start session</button>
+    <button class="ghost" id="statsBtn">Record</button>
+  </div>
+</div>
+
+<!-- BRIEF: no name, no hint, no subtitle. -->
+<div id="briefScreen" class="screen hidden">
+  <div class="panel">
+    <div id="count">3</div>
+    <div class="briefline">You are in the <b id="briefLane">CENTER</b> lane · <b id="briefMode">League</b>
+      <br/>Read the pack. Commit early. Or don't commit at all.</div>
+  </div>
+</div>
+
+<!-- RESULT: the reveal + the cue you missed -->
+<div id="resultScreen" class="screen hidden">
+  <div class="panel">
+    <div id="rKicker" class="kicker good">CLEAN READ</div>
+    <div id="rName">Accordion</div>
+    <div id="rLesson">—</div>
+
+    <canvas id="cue" class="strip"></canvas>
+    <canvas id="tl" class="strip"></canvas>
+
+    <div class="metrics">
+      <div class="metric hero"><b id="rRead">0</b><span>Read</span></div>
+      <div class="metric"><b id="rLat">—</b><span>Latency</span></div>
+      <div class="metric"><b id="rMom">0</b><span>Momentum</span></div>
+      <div class="metric"><b id="rDis">0</b><span>Discipline</span></div>
+    </div>
+    <div id="rNote">—</div>
+    <div id="rLatNote">from cue onset</div>
+
+    <div class="total"><span>Points</span><b id="rPts">0</b></div>
+    <button class="cta" id="nextBtn">Next drill</button>
+    <button class="ghost" id="retryBtn">Run this one again</button>
+    <button class="ghost" id="menuBtn">End session</button>
+  </div>
+</div>
+
+<!-- RECORD -->
+<div id="statsScreen" class="screen hidden">
+  <div class="panel">
+    <div class="eyebrow">Record</div>
+    <h1 style="font-size:30px">Your reads</h1>
+    <p class="sub">Hit rate is whether you picked right. False alarm is how often you bailed on a feint.
+      Latency is milliseconds from the cue firing to your first input. They are separate on purpose —
+      you want one to fall while the other holds.</p>
+    <div class="shead"><div>Pattern</div><div>Hit rate</div><div>Hit</div><div>FA</div><div>RT</div></div>
+    <div id="statsBody"></div>
+    <button class="ghost" id="statsBack" style="margin-top:16px">Back</button>
+    <button class="ghost" id="resetBtn">Erase record</button>
+  </div>
+</div>
+
+<script>
+/* ===========================================================
+   RACECRAFT — CORE
+   Device-independent world, seeded drill generator, validator.
+   No DOM, no canvas. Runs headless. This is the load-bearing part.
+   =========================================================== */
+
+/* ---------- math ---------- */
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const approach = (v,t,a)=> v<t ? Math.min(v+a,t) : Math.max(v-a,t);
+const invLerp = (a,b,v)=>clamp((v-a)/(b-a),0,1);
+
+/* ---------- seeded rng (mulberry32) ---------- */
+function rngFrom(seed){
+  let a = seed >>> 0;
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rr = (r,a,b)=>a + r()*(b-a);
+const ri = (r,a,b)=>Math.floor(rr(r,a,b+1));
+const pick = (r,arr)=>arr[Math.floor(r()*arr.length)];
+
+/* ---------- world constants (VIRTUAL units — never screen px) ----------
+   The original build sized physics off innerHeight, so the game literally
+   played differently on different phones. Everything here is device-neutral. */
+const WORLD = {
+  H: 1000,          // virtual height
+  LANE_W: 130,      // lane pitch
+  PLAYER_Y: 800,    // player's fixed y
+  CAR_W: 88,
+  CAR_H: 170,
+  CLOSE_K: 4.6,     // mph delta -> virtual units/sec closure
+  STEER_RATE: 1.45, // lanes/sec at full lock
+  BRAKE_DECEL: 80,  // mph/sec at full brake
+  THROTTLE: 26,     // mph/sec
+  V_MAX: 182,
+  V_MIN: 96,
+  EDGE_LO: -0.12,
+  EDGE_HI: 2.12
+};
+
+/* ---------- car ---------- */
+class WCar {
+  constructor(o){
+    this.id = o.id;
+    this.lane = o.lane; this.targetLane = o.lane;
+    this.y = o.y;
+    this.speed = o.speed; this.targetSpeed = o.speed;
+    this.accel = o.accel ?? 55;
+    this.lateralRate = o.lateralRate ?? 0.50;
+    this.color = o.color; this.accent = o.accent; this.number = o.number;
+    this.braking = false;
+    this.extraAngle = 0; this.spin = 0; this.spinAngle = 0; this.angle = 0;
+    this.highlight = 0;
+    this.smoke = false;
+  }
+}
+
+/* ---------- world ---------- */
+class World {
+  constructor(drill){
+    this.drill = drill;
+    this.t = 0;
+    this.cars = drill.cars.map(c=>new WCar(c));
+    this.player = { lane: drill.playerLane, speed: 180, brake: 0, steer: 0 };
+    this.crashed = false; this.crashCar = null; this.crashT = 0;
+    this.offtrack = 0;
+    this.steerEnergy = 0;
+    this.brakeTime = 0;
+    this.speedSum = 0; this.speedSamples = 0;
+    this.dirChanges = 0; this.lastSign = 0;
+  }
+  car(id){ for(const c of this.cars) if(c.id===id) return c; return null; }
+
+  step(dt, input){
+    if(this.crashed) return;
+    this.t += dt;
+    const p = this.player, C = WORLD;
+
+    p.steer = clamp(input.steer, -1, 1);
+    p.brake = clamp(input.brake, 0, 1);
+
+    if(p.brake > 0.02) p.speed = Math.max(C.V_MIN, p.speed - p.brake * C.BRAKE_DECEL * dt);
+    else               p.speed = Math.min(C.V_MAX, p.speed + C.THROTTLE * dt);
+
+    p.lane += p.steer * C.STEER_RATE * dt;
+    if(p.lane < C.EDGE_LO){ p.lane = C.EDGE_LO; this.offtrack += dt; }
+    if(p.lane > C.EDGE_HI){ p.lane = C.EDGE_HI; this.offtrack += dt; }
+
+    // telemetry
+    this.steerEnergy += Math.abs(p.steer) * dt;
+    if(p.brake > 0.3) this.brakeTime += dt;
+    this.speedSum += p.speed; this.speedSamples++;
+    const sign = Math.abs(p.steer) > 0.35 ? Math.sign(p.steer) : 0;
+    if(sign && this.lastSign && sign !== this.lastSign) this.dirChanges++;
+    if(sign) this.lastSign = sign;
+
+    // scripted traffic
+    this.drill.apply(this, this.t);
+
+    for(const c of this.cars){
+      c.speed = approach(c.speed, c.targetSpeed, c.accel * dt);
+      c.lane  = approach(c.lane,  c.targetLane,  c.lateralRate * dt);
+      c.y    += (p.speed - c.speed) * C.CLOSE_K * dt;
+      if(c.spin) c.spinAngle += c.spin * dt;
+      c.angle = (c.targetLane - c.lane) * -0.45 + c.extraAngle + c.spinAngle;
+
+      const dx = (c.lane - p.lane) * C.LANE_W;
+      const dy = c.y - C.PLAYER_Y;
+      if(Math.abs(dx) < C.CAR_W * 0.92 && Math.abs(dy) < C.CAR_H * 0.88){
+        this.crashed = true; this.crashCar = c.id; this.crashT = this.t;
+      }
+    }
+  }
+  avgSpeed(){ return this.speedSamples ? this.speedSum / this.speedSamples : 180; }
+}
+
+/* ---------- headless simulation ---------- */
+function simulate(drill, policy, until){
+  const w = new World(drill);
+  const dt = 1/120;
+  const end = until ?? drill.duration;
+  const steps = Math.ceil(end / dt);
+  for(let i=0;i<steps;i++){
+    w.step(dt, policy(i*dt));
+    if(w.crashed) return w;
+  }
+  return w;
+}
+const POLICY = {
+  none : ()=> ()=>({steer:0, brake:0}),
+  brake: (tc)=> (t)=>({steer:0, brake: t>=tc ? 1 : 0}),
+  left : (tc)=> (t)=>({steer: t>=tc ? -1 : 0, brake:0}),
+  right: (tc)=> (t)=>({steer: t>=tc ?  1 : 0, brake:0})
+};
+const ACTIONS = ['brake','left','right'];
+
+/* ---------- SOLVABILITY VALIDATOR ----------
+   Nothing reaches the player unless it passes this. A hallucinating LLM
+   or a bad RNG roll physically cannot ship you a broken drill. */
+function validate(drill){
+  const doNothing = simulate(drill, POLICY.none());
+
+  if(drill.isCatch){
+    // A catch trial must be survivable by doing nothing. That's the whole point.
+    if(doNothing.crashed) return 'catch: inaction crashes';
+    return null;
+  }
+
+  // 1. The hazard must be real.
+  if(!doNothing.crashed) return 'hazard never materialises';
+
+  // 2. At least one CORRECT action, committed AFTER the cue, must survive.
+  //    (If you can only survive by acting before the cue, it's a guess, not a read.)
+  let survivable = false, bestT = null;
+  outer:
+  for(const act of drill.correct){
+    for(let tc = drill.cueAt; tc <= drill.cueAt + 0.90; tc += 0.05){
+      if(!simulate(drill, POLICY[act](tc)).crashed){ survivable = true; bestT = tc; break outer; }
+    }
+  }
+  if(!survivable) return 'no correct response survives inside the cue window';
+
+  // 3. The drill must DISCRIMINATE — some wrong action must actually punish you.
+  //    Otherwise it teaches nothing.
+  const wrong = ACTIONS.filter(a=>!drill.correct.includes(a));
+  let punishes = false;
+  for(const act of wrong){
+    if(simulate(drill, POLICY[act](drill.cueAt + 0.25)).crashed){ punishes = true; break; }
+  }
+  if(!punishes) return 'every response survives — drill does not discriminate';
+
+  drill.idealT = bestT;
+  return null;
+}
+
+/* ---------- liveries ---------- */
+const LIVERIES = [
+  ['#e63f46','#ffe66a'], ['#2368d8','#f6f9ff'], ['#20a477','#f7d04a'], ['#f37d24','#162b3c'],
+  ['#6c43d8','#efedf8'], ['#d9d9dc','#e13d49'], ['#111923','#48d9df'], ['#efb72f','#d12f3f'],
+  ['#ee5fa4','#202532'], ['#2f343e','#9af3df'], ['#f2f2f2','#2776d9'], ['#b91f30','#11161d'],
+  ['#3a8ea8','#f4efe2'], ['#c8552f','#f1d9a8'], ['#1c6b4a','#e9f2ec']
+];
+
+/* mirror helper: lane 0<->2, left<->right */
+const MIR_ACT = { brake:'brake', left:'right', right:'left' };
+
+/* ---------- ARCHETYPES ----------
+   Each returns a drill spec. Parameterised, jitterable, mirrorable,
+   and each has a CATCH variant where the identical cue resolves into nothing. */
+
+const ARCHETYPES = {
+
+  /* Lead car checks up. The car directly ahead is the SECOND warning. */
+  accordion: {
+    label: 'Accordion',
+    lesson: 'The car directly ahead was the second warning, not the first.',
+    build(r, m, isCatch){
+      const cueAt   = rr(r, 2.4, 4.6);
+      const lead    = cueAt + rr(r, 0.55, 0.95);   // hazard
+      const dur     = lead + 4.4;
+      const L = (x)=> m>0 ? x : 2-x;
+      const cars = [
+        { id:'far',   lane:L(1),    y: rr(r,150,230), speed: rr(r,176,181), accel: 96 },
+        { id:'near',  lane:L(1),    y: rr(r,430,500), speed: rr(r,180,183), accel: 100 },
+        { id:'boxL',  lane:L(0.02), y: rr(r,540,600), speed: 180 },
+        { id:'boxR',  lane:L(1.98), y: rr(r,530,590), speed: 181 }
+      ];
+      return {
+        key:'accordion', isCatch, cueAt, hazardAt: lead, duration: dur,
+        playerLane: L(1), cueCar: 'far',
+        correct: isCatch ? [] : ['brake'],
+        cars,
+        apply(w, t){
+          const far = w.car('far'), near = w.car('near');
+          if(t >= this.cueAt){ far.braking = true; far.targetSpeed = 138; far.highlight = 0.40; }
+          if(this.isCatch){
+            // The tell fires... and dissolves. Far car was just settling. Nothing follows.
+            if(t >= this.cueAt + 0.75){ far.braking = false; far.targetSpeed = 177; far.highlight = 0.10; }
+          } else {
+            if(t >= this.hazardAt){ near.braking = true; near.targetSpeed = 118; near.highlight = 0.25; }
+            if(t >= this.hazardAt + 2.6){ near.braking=false; far.braking=false; near.targetSpeed=174; far.targetSpeed=176; }
+          }
+        }
+      };
+    }
+  },
+
+  /* A block starts as body language before it becomes a lane change. */
+  closingDoor: {
+    label: 'Closing Door',
+    lesson: 'A block is body language before it is a lane change. Read the nose, not the crossing.',
+    build(r, m, isCatch){
+      const cueAt = rr(r, 2.4, 4.6);
+      const commit = cueAt + rr(r, 0.60, 1.00);
+      const dur = commit + 4.4;
+      const L = (x)=> m>0 ? x : 2-x;
+      const cars = [
+        { id:'blocker', lane:L(1.94), y: rr(r,430,500), speed: rr(r,172,176), lateralRate: 0.24, accel: 92 },
+        { id:'trapR',   lane:L(2.02), y: rr(r,620,690), speed: 181 },
+        { id:'aheadC',  lane:L(1.02), y: rr(r,130,190), speed: 181 }
+      ];
+      return {
+        key:'closingDoor', isCatch, cueAt, hazardAt: commit, duration: dur,
+        playerLane: L(1), cueCar: 'blocker',
+        // escape is AWAY from the blocker, or lift
+        correct: isCatch ? [] : [ m>0 ? 'left' : 'right', 'brake' ],
+        cars,
+        apply(w, t){
+          const b = w.car('blocker');
+          const inLane = (x)=> m>0 ? x : 2-x;
+          if(t >= this.cueAt){ b.targetLane = inLane(1.66); b.extraAngle = -0.035*m; b.highlight = 0.32; }
+          if(this.isCatch){
+            // He leans... and thinks better of it. Holds his lane.
+            if(t >= this.cueAt + 0.8){ b.targetLane = inLane(1.97); b.extraAngle = 0; b.highlight = 0.08; }
+          } else {
+            if(t >= this.hazardAt){ b.targetLane = inLane(1.0); b.lateralRate = 0.92; b.targetSpeed = 152; b.braking = true; }
+            if(t >= this.hazardAt + 2.4){ b.braking = false; b.targetSpeed = 177; }
+          }
+        }
+      };
+    }
+  },
+
+  /* The save is decided by the direction of the first yaw. */
+  snapLoose: {
+    label: 'Snap Loose',
+    lesson: 'Project where the spinning car will finish, not where it is now.',
+    build(r, m, isCatch){
+      const cueAt = rr(r, 2.4, 4.5);
+      const snap = cueAt + rr(r, 0.55, 0.95);
+      const dur = snap + 4.6;
+      const L = (x)=> m>0 ? x : 2-x;
+      const cars = [
+        { id:'loose', lane:L(1),    y: rr(r,380,460), speed: rr(r,176,180), lateralRate: 0.55, accel: 90 },
+        { id:'pinL',  lane:L(0.02), y: rr(r,560,630), speed: 180 },
+        { id:'farR',  lane:L(2.03), y: rr(r,150,210), speed: 181 }
+      ];
+      return {
+        key:'snapLoose', isCatch, cueAt, hazardAt: snap, duration: dur,
+        playerLane: L(1), cueCar: 'loose',
+        // rear steps toward the pinL side -> escape is the OTHER side
+        correct: isCatch ? [] : [ m>0 ? 'right' : 'left', 'brake' ],
+        cars,
+        apply(w, t){
+          const c = w.car('loose');
+          const inLane = (x)=> m>0 ? x : 2-x;
+          if(t >= this.cueAt && t < this.hazardAt){
+            const k = invLerp(this.cueAt, this.hazardAt, t);
+            c.extraAngle = Math.sin((t-this.cueAt)*17) * 0.038 * k * m;
+            c.highlight = 0.28; c.smoke = true;
+          }
+          if(this.isCatch){
+            // He gathers it up. Wiggle, correction, gone.
+            if(t >= this.hazardAt){ c.extraAngle *= 0.4; c.smoke = false; c.highlight = 0.08; c.targetSpeed = 178; }
+          } else {
+            if(t >= this.hazardAt){
+              c.spin = -1.6*m; c.targetLane = inLane(0.22); c.lateralRate = 0.78;
+              c.targetSpeed = 108; c.braking = true; c.smoke = true;
+            }
+          }
+        }
+      };
+    }
+  },
+
+  /* The visible reaction arrives after the useful braking window. */
+  blindChain: {
+    label: 'Blind Chain',
+    lesson: 'A chain reaction telegraphs sideways before it reaches your lane.',
+    build(r, m, isCatch){
+      const cueAt = rr(r, 2.4, 4.6);
+      const reach = cueAt + rr(r, 0.70, 1.10);
+      const dur = reach + 4.4;
+      const L = (x)=> m>0 ? x : 2-x;
+      const cars = [
+        { id:'mask',  lane:L(1),    y: rr(r,440,510), speed: rr(r,180,183), accel: 104 },
+        { id:'rowA',  lane:L(0.04), y: rr(r,170,230), speed: rr(r,175,178), accel: 95 },
+        { id:'rowB',  lane:L(1.98), y: rr(r,150,215), speed: rr(r,176,179), accel: 95 },
+        { id:'sideL', lane:L(0.03), y: rr(r,570,640), speed: 182 }
+      ];
+      return {
+        key:'blindChain', isCatch, cueAt, hazardAt: reach, duration: dur,
+        playerLane: L(1), cueCar: 'rowA',
+        correct: isCatch ? [] : ['brake'],
+        cars,
+        apply(w, t){
+          const mask = w.car('mask'), a = w.car('rowA'), b = w.car('rowB');
+          if(t >= this.cueAt){
+            a.braking = true; b.braking = true;
+            a.targetSpeed = 134; b.targetSpeed = 142;
+            a.highlight = 0.30; b.highlight = 0.22;
+          }
+          if(this.isCatch){
+            // The outside row was just checking up for a lapper. It clears.
+            if(t >= this.cueAt + 0.85){
+              a.braking=false; b.braking=false; a.targetSpeed=175; b.targetSpeed=176;
+              a.highlight=0.08; b.highlight=0.06;
+            }
+          } else {
+            if(t >= this.hazardAt){ mask.braking = true; mask.targetSpeed = 114; mask.highlight = 0.25; }
+            if(t >= this.hazardAt + 2.5){
+              mask.braking=false; a.braking=false; b.braking=false;
+              mask.targetSpeed=175; a.targetSpeed=173; b.targetSpeed=174;
+            }
+          }
+        }
+      };
+    }
+  },
+
+  /* Sometimes the fastest escape is to stop contesting the overlap. */
+  threeWide: {
+    label: 'Three-Wide Pinch',
+    lesson: 'When both doors are shut, do not invent a lane. Change the overlap by changing speed.',
+    build(r, m, isCatch){
+      const cueAt = rr(r, 2.4, 4.4);
+      const squeeze = cueAt + rr(r, 0.55, 0.90);
+      const dur = squeeze + 4.2;
+      const L = (x)=> m>0 ? x : 2-x;
+      const cars = [
+        { id:'sqL',  lane:L(0.02), y: rr(r,600,670), speed: rr(r,180,183), lateralRate: 0.20 },
+        { id:'sqR',  lane:L(1.98), y: rr(r,590,660), speed: rr(r,179,182), lateralRate: 0.20 },
+        { id:'lead', lane:L(1.02), y: rr(r,290,350), speed: rr(r,176,179), accel: 88 }
+      ];
+      return {
+        key:'threeWide', isCatch, cueAt, hazardAt: squeeze, duration: dur,
+        playerLane: L(1), cueCar: 'sqL',
+        correct: isCatch ? [] : ['brake'],
+        cars,
+        apply(w, t){
+          const l = w.car('sqL'), rC = w.car('sqR'), lead = w.car('lead');
+          const iL = (x)=> m>0 ? x : 2-x;
+          if(t >= this.cueAt){
+            l.targetLane = iL(0.20); rC.targetLane = iL(1.80);
+            l.extraAngle = -0.028*m; rC.extraAngle = 0.028*m;
+            l.highlight = 0.22; rC.highlight = 0.22;
+          }
+          if(this.isCatch){
+            // They lean in, then both think better of it and hold their lines.
+            if(t >= this.cueAt + 0.8){
+              l.targetLane = iL(0.02); rC.targetLane = iL(1.98);
+              l.extraAngle = 0; rC.extraAngle = 0; l.highlight = 0.06; rC.highlight = 0.06;
+            }
+          } else {
+            if(t >= this.hazardAt){
+              l.targetLane = iL(0.60); rC.targetLane = iL(1.40);
+              l.lateralRate = 0.66; rC.lateralRate = 0.66;
+              l.targetSpeed = 186; rC.targetSpeed = 185;
+              lead.braking = true; lead.targetSpeed = 150;
+            }
+            if(t >= this.hazardAt + 2.2){ l.targetLane = iL(0.20); rC.targetLane = iL(1.80); lead.braking=false; lead.targetSpeed=178; }
+          }
+        }
+      };
+    }
+  }
+};
+
+const ARCH_KEYS = Object.keys(ARCHETYPES);
+
+/* ---------- paint the pack (cosmetic only — never affects physics) ---------- */
+function dressCars(drill, r){
+  const used = new Set();
+  for(const c of drill.cars){
+    const liv = pick(r, LIVERIES);
+    c.color = liv[0]; c.accent = liv[1];
+    let n; do { n = ri(r, 2, 99); } while(used.has(n)); used.add(n);
+    c.number = n;
+  }
+}
+
+/* ---------- SEEDED DIRECTOR ----------
+   No model. No download. Works on a plane. This is the baseline that
+   every other Director must beat. */
+function generateDrill(archKey, seed, opts = {}){
+  const catchRate = opts.catchRate ?? 0.25;
+  // Decide catch-vs-real ONCE. If this is re-rolled inside the retry loop,
+  // catch trials (which are easier to validate) get over-represented.
+  const coin = rngFrom(seed ^ 0x9E3779B9)();
+  const isCatch = opts.forceCatch ?? (coin < catchRate);
+
+  for(let attempt = 0; attempt < 60; attempt++){
+    const r = rngFrom(seed + attempt * 7919);
+    const mirror  = r() < 0.5 ? 1 : -1;
+    const arch = ARCHETYPES[archKey];
+    const drill = arch.build(r, mirror, isCatch);
+    drill.label  = arch.label;
+    drill.lesson = arch.lesson;
+    drill.mirror = mirror;
+    drill.seed   = seed + attempt * 7919;
+    const err = validate(drill);
+    if(!err){ dressCars(drill, r); drill.attempts = attempt; return drill; }
+  }
+  return null; // caller retries with a fresh seed
+}
+
+/* ---------- response classification ---------- */
+const COMMIT_BRAKE = 0.30;
+const COMMIT_STEER = 0.45;
+
+function classify(drill, commit, world){
+  // commit: {type, t} | null
+  const out = { collision: world.crashed, falseAlarm:false, missed:false, premature:false,
+                correct:false, reactionMs:null, commit };
+
+  if(drill.isCatch){
+    if(!commit){ out.correct = !world.crashed; return out; }
+    out.falseAlarm = true;
+    out.reactionMs = Math.round((commit.t - drill.cueAt) * 1000);
+    return out;
+  }
+  if(!commit){ out.missed = true; return out; }
+
+  out.reactionMs = Math.round((commit.t - drill.cueAt) * 1000);
+  if(commit.t < drill.cueAt){ out.premature = true; return out; }   // guessed. no credit.
+  out.correct = drill.correct.includes(commit.type) && !world.crashed;
+  return out;
+}
+
+function scoreRun(drill, cls, world){
+  // Two numbers that mean different things — that was the whole complaint.
+  // READ  = did you pick the right answer, and did you pick it before the car did.
+  // LATENCY = raw ms from cue onset to your first commit.
+  let read = 0, label = '';
+
+  if(drill.isCatch){
+    if(cls.correct){ read = 100; label = 'Held. Nothing was ever going to happen.'; }
+    else if(cls.falseAlarm){ read = 22; label = `False alarm — you bailed on a cue that resolved.`; }
+    else { read = 30; label = 'Contact on a drill that required nothing.'; }
+  } else if(cls.missed){
+    read = 12; label = 'No committed response.';
+  } else if(cls.premature){
+    read = 18; label = 'Committed before any usable cue existed. That is a guess.';
+  } else if(!drill.correct.includes(cls.commit.type)){
+    read = cls.collision ? 24 : 40;
+    label = `Wrong read — you went ${cls.commit.type}.`;
+  } else if(cls.collision){
+    read = 46; label = 'Right idea, too late to matter.';
+  } else {
+    const lead = drill.hazardAt - cls.commit.t;  // >0 = you moved before the car did
+    if(lead >= 0) read = Math.round(72 + 28 * invLerp(0, drill.hazardAt - drill.cueAt, lead));
+    else          read = Math.round(70 - 40 * invLerp(0, 1.2, -lead));
+    label = lead >= 0
+      ? `Committed ${lead.toFixed(2)}s before the hazard developed.`
+      : `Committed ${(-lead).toFixed(2)}s after it developed.`;
+  }
+
+  const avg = world.avgSpeed();
+  const momentum   = Math.round(clamp(34 + (avg - 118) * 1.05 - world.brakeTime * 5.0, 20, 100));
+  const discipline = Math.round(clamp(102 - world.steerEnergy * 8.0 - world.dirChanges * 14 - world.offtrack * 18, 15, 100));
+
+  // Momentum and Discipline are TIEBREAKERS BETWEEN CLEAN RUNS, not income.
+  // If they pay out unconditionally, sitting still farms both (never brake ->
+  // high average speed; never steer -> perfect discipline) and passivity
+  // outscores an honest early read. They only bank on a correct read.
+  const earned = cls.correct ? (momentum * 1.6 + discipline * 1.4) : 0;
+  const points = Math.max(0, Math.round(read * 4.0 + earned));
+
+  return { read, label, momentum, discipline, points, banked: cls.correct };
+}
+
+/* ===========================================================
+   RACECRAFT — UI / SHELL
+   =========================================================== */
+
+const $ = (id)=>document.getElementById(id);
+
+/* ---------- modes: cue SALIENCE and LEAD TIME only.
+   Information content is identical across all three. The old build
+   made "easy" mean "we tell you the answer". That's not difficulty. */
+const MODES = {
+  rookie: { lead: 1.50, glow: 1.00, label: 'Rookie' },
+  league: { lead: 1.00, glow: 0.55, label: 'League' },
+  expert: { lead: 0.65, glow: 0.15, label: 'Expert' }
+};
+
+/* ---------- persistence ---------- */
+const STORE_KEY = 'racecraft.v1';
+const Stats = {
+  data: null,
+  load(){
+    try { this.data = JSON.parse(localStorage.getItem(STORE_KEY)) || null; } catch(e){ this.data = null; }
+    if(!this.data) this.data = { arch:{}, runs:0, best:0 };
+    for(const k of ARCH_KEYS) if(!this.data.arch[k]) this.data.arch[k] = { n:0, hits:0, fa:0, catches:0, rts:[] };
+    return this.data;
+  },
+  save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(this.data)); } catch(e){} },
+  record(drill, cls, sc){
+    const a = this.data.arch[drill.key];
+    a.n++;
+    this.data.runs++;
+    if(sc.points > this.data.best) this.data.best = sc.points;
+    if(drill.isCatch){
+      a.catches++;
+      if(cls.falseAlarm) a.fa++;
+      if(cls.correct) a.hits++;
+    } else {
+      if(cls.correct) a.hits++;
+      if(cls.correct && cls.reactionMs != null){
+        a.rts.push(cls.reactionMs);
+        if(a.rts.length > 60) a.rts.shift();
+      }
+    }
+    this.save();
+  },
+  hitRate(k){ const a=this.data.arch[k]; return a.n < 2 ? null : a.hits/a.n; },
+  faRate(k){ const a=this.data.arch[k]; return a.catches < 1 ? null : a.fa/a.catches; },
+  medianRT(k){
+    const a=this.data.arch[k]; if(!a.rts.length) return null;
+    const s=[...a.rts].sort((x,y)=>x-y); return s[(s.length/2)|0];
+  },
+  reset(){ this.data = { arch:{}, runs:0, best:0 }; for(const k of ARCH_KEYS) this.data.arch[k]={n:0,hits:0,fa:0,catches:0,rts:[]}; this.save(); }
+};
+
+/* ---------- adaptive drill selection: bias toward your worst pattern ---------- */
+function chooseArch(lastKey){
+  const w = ARCH_KEYS.map(k=>{
+    const hr = Stats.hitRate(k);
+    let weight = hr === null ? 2.0 : 1 + 2.2 * (1 - hr);   // never seen -> sample it; bad at it -> sample it more
+    if(k === lastKey) weight *= 0.35;                       // don't repeat back-to-back
+    return weight;
+  });
+  const total = w.reduce((a,b)=>a+b,0);
+  let x = Math.random() * total;
+  for(let i=0;i<ARCH_KEYS.length;i++){ x -= w[i]; if(x <= 0) return ARCH_KEYS[i]; }
+  return ARCH_KEYS[0];
+}
+
+/* ---------- audio ---------- */
+class Audio {
+  constructor(){ this.ctx=null; this.on=true; }
+  start(){
+    if(this.ctx){ this.ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain(); this.master.gain.value = 0.22;
+    this.master.connect(this.ctx.destination);
+    this.osc = this.ctx.createOscillator(); this.osc.type='sawtooth';
+    this.eg = this.ctx.createGain(); this.eg.gain.value=0.04;
+    const f = this.ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=470;
+    this.osc.connect(f); f.connect(this.eg); this.eg.connect(this.master);
+    this.osc.frequency.value=88; this.osc.start();
+  }
+  engine(mph, brake){
+    if(!this.ctx||!this.on) return;
+    const n=this.ctx.currentTime;
+    this.osc.frequency.setTargetAtTime(72 + mph*0.63, n, 0.06);
+    this.eg.gain.setTargetAtTime(0.024 + mph/9000 - brake*0.008, n, 0.08);
+  }
+  tone(fr,d=0.12,ty='sine',v=0.16){
+    if(!this.ctx||!this.on) return;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=ty; o.frequency.value=fr;
+    g.gain.setValueAtTime(v,this.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+d);
+    o.connect(g); g.connect(this.master); o.start(); o.stop(this.ctx.currentTime+d);
+  }
+  crash(){
+    if(!this.ctx||!this.on) return;
+    const len=Math.floor(this.ctx.sampleRate*0.35);
+    const b=this.ctx.createBuffer(1,len,this.ctx.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2);
+    const s=this.ctx.createBufferSource(); s.buffer=b;
+    const f=this.ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=1200;
+    const g=this.ctx.createGain(); g.gain.value=0.5;
+    s.connect(f); f.connect(g); g.connect(this.master); s.start();
+    this.tone(58,0.28,'square',0.24);
+  }
+  toggle(){ this.on=!this.on; if(this.master) this.master.gain.setTargetAtTime(this.on?0.22:0.0001,this.ctx.currentTime,0.03); return this.on; }
+}
+
+/* ---------- particles (cosmetic; never touch physics) ---------- */
+class P {
+  constructor(x,y,type){
+    this.x=x; this.y=y; this.type=type;
+    this.life=this.max = type==='spark' ? 0.2+Math.random()*0.28 : 0.5+Math.random()*0.65;
+    this.vx = type==='spark' ? (Math.random()*2-1)*190 : (Math.random()*2-1)*22;
+    this.vy = type==='spark' ? -120+Math.random()*180 : 24+Math.random()*70;
+    this.size = type==='spark' ? 1.4+Math.random()*1.8 : 10+Math.random()*14;
+  }
+  step(dt){ this.life-=dt; this.x+=this.vx*dt; this.y+=this.vy*dt;
+    if(this.type==='spark') this.vy+=420*dt; else this.size+=19*dt; }
+  draw(g){
+    const a=clamp(this.life/this.max,0,1);
+    g.save();
+    if(this.type==='spark'){
+      g.globalAlpha=a; g.strokeStyle=a>0.45?'#fff4b0':'#ff8c38'; g.lineWidth=1.8;
+      g.beginPath(); g.moveTo(this.x,this.y); g.lineTo(this.x-this.vx*0.025,this.y-this.vy*0.025); g.stroke();
+    } else {
+      g.globalAlpha=a*0.22;
+      const rg=g.createRadialGradient(this.x,this.y,0,this.x,this.y,this.size);
+      rg.addColorStop(0,'rgba(232,239,241,.9)'); rg.addColorStop(1,'rgba(100,116,123,0)');
+      g.fillStyle=rg; g.beginPath(); g.arc(this.x,this.y,this.size,0,Math.PI*2); g.fill();
+    }
+    g.restore();
+  }
+}
+
+/* ---------- RENDERER (shared by the live canvas and the cue-replay canvas) ---------- */
+function makeView(W,H){
+  const scale = Math.min(H / WORLD.H, (W * 0.88) / (3 * WORLD.LANE_W));
+  return {
+    scale,
+    cx: W/2,
+    x(lane){ return W/2 + (lane - 1) * WORLD.LANE_W * scale; },
+    y(vy){ return vy * scale + (H - WORLD.H * scale) * 0.5; }
+  };
+}
+
+function drawRoad(g, v, W, H, scroll, reduced){
+  g.fillStyle = '#071016'; g.fillRect(0,0,W,H);
+  const halfRoad = 1.5 * WORLD.LANE_W * v.scale;
+  const L = v.cx - halfRoad, R = v.cx + halfRoad;
+
+  const grd = g.createLinearGradient(0, v.y(0), 0, v.y(WORLD.H));
+  grd.addColorStop(0, '#0d1a22'); grd.addColorStop(1, '#16242d');
+  g.fillStyle = grd; g.fillRect(L, 0, R-L, H);
+
+  // walls
+  g.fillStyle = '#26333c'; g.fillRect(L-9,0,9,H); g.fillRect(R,0,9,H);
+  g.fillStyle = 'rgba(255,255,255,.06)'; g.fillRect(L-9,0,3,H); g.fillRect(R+6,0,3,H);
+
+  // lane markers — motion comes from scroll, not from any per-device value
+  const dash = 62 * v.scale, gap = 54 * v.scale;
+  g.strokeStyle = 'rgba(190,208,218,.30)';
+  g.lineWidth = Math.max(2, 5*v.scale);
+  g.setLineDash([dash, gap]);
+  g.lineDashOffset = -(scroll % (dash+gap));
+  for(const lane of [0.5, 1.5]){
+    const x = v.x(lane);
+    g.beginPath(); g.moveTo(x, -20); g.lineTo(x, H+20); g.stroke();
+  }
+  g.setLineDash([]);
+}
+
+function drawCar(g, v, car, opts={}){
+  const x = v.x(car.lane), y = v.y(car.y);
+  const w = WORLD.CAR_W * v.scale, h = WORLD.CAR_H * v.scale;
+  g.save();
+  g.translate(x,y); g.rotate(car.angle || 0);
+
+  // highlight ring for the cue car (salience is the difficulty dial)
+  if(car.highlight > 0.01 && opts.glow > 0){
+    const a = car.highlight * opts.glow;
+    g.save();
+    g.shadowColor = `rgba(78,230,207,${a})`; g.shadowBlur = 26 * v.scale * 4;
+    g.strokeStyle = `rgba(78,230,207,${a*0.9})`; g.lineWidth = 2.5;
+    g.strokeRect(-w/2-3, -h/2-3, w+6, h+6);
+    g.restore();
+  }
+
+  g.fillStyle='rgba(0,0,0,.35)';
+  g.fillRect(-w/2+2, -h/2+5, w, h);
+
+  g.fillStyle = car.color || '#ccc';
+  g.fillRect(-w/2, -h/2, w, h);
+  g.fillStyle = car.accent || '#fff';
+  g.fillRect(-w/2, -h/2 + h*0.30, w, h*0.10);
+
+  // greenhouse
+  g.fillStyle='rgba(10,18,24,.82)';
+  g.fillRect(-w*0.34, -h*0.10, w*0.68, h*0.34);
+
+  // number
+  g.fillStyle='rgba(255,255,255,.92)';
+  g.font = `900 ${Math.max(9, 30*v.scale)}px Inter, system-ui, sans-serif`;
+  g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(String(car.number ?? ''), 0, h*0.32);
+
+  // BRAKE LIGHTS — red fill + white ring + chevron.
+  // Red-on-red was unreadable for anyone with a red deficiency; the ring and
+  // chevron carry the same signal in luminance and shape.
+  if(car.braking){
+    const by = h/2 - 4*v.scale, bw = w*0.22, bh = Math.max(3, 9*v.scale);
+    for(const sx of [-1, 1]){
+      const bx = sx * w * 0.30;
+      g.fillStyle = '#ff2d3d';
+      g.fillRect(bx - bw/2, by - bh, bw, bh);
+      g.strokeStyle = 'rgba(255,255,255,.95)'; g.lineWidth = 1.4;
+      g.strokeRect(bx - bw/2, by - bh, bw, bh);
+    }
+    g.strokeStyle = 'rgba(255,255,255,.9)';
+    g.lineWidth = Math.max(1.6, 2.4*v.scale);
+    g.beginPath();
+    g.moveTo(-w*0.16, by - bh*2.4);
+    g.lineTo(0,        by - bh*0.9);
+    g.lineTo( w*0.16, by - bh*2.4);
+    g.stroke();
+  }
+  g.restore();
+}
+
+function drawPlayer(g, v, p, W, H){
+  const x = v.x(p.lane), y = v.y(WORLD.PLAYER_Y);
+  const w = WORLD.CAR_W * v.scale, h = WORLD.CAR_H * v.scale;
+  g.save();
+  g.translate(x,y); g.rotate(p.steer * 0.10);
+  g.fillStyle='rgba(0,0,0,.45)'; g.fillRect(-w/2+2,-h/2+6,w,h);
+  g.fillStyle='#e8eef1'; g.fillRect(-w/2,-h/2,w,h);
+  g.fillStyle='#4ee6cf'; g.fillRect(-w/2,-h/2+h*0.30,w,h*0.09);
+  g.fillStyle='rgba(10,18,24,.85)'; g.fillRect(-w*0.34,-h*0.12,w*0.68,h*0.34);
+  if(p.brake > 0.05){
+    const by=h/2-4*v.scale, bh=Math.max(3,9*v.scale), bw=w*0.22;
+    for(const sx of [-1,1]){
+      g.fillStyle=`rgba(255,45,61,${0.4+p.brake*0.6})`;
+      g.fillRect(sx*w*0.30-bw/2, by-bh, bw, bh);
+      g.strokeStyle='rgba(255,255,255,.9)'; g.lineWidth=1.3;
+      g.strokeRect(sx*w*0.30-bw/2, by-bh, bw, bh);
+    }
+  }
+  g.restore();
+}
+
+/* ---------- GAME ---------- */
+class Game {
+  constructor(){
+    this.canvas = $('game');
+    this.g = this.canvas.getContext('2d', { alpha:false });
+    this.audio = new Audio();
+    this.mode = 'league';
+    this.state = 'menu';
+    this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    this.world = null; this.drill = null;
+    this.commit = null; this.particles = []; this.scroll = 0;
+    this.sessionScore = 0; this.streak = 0; this.lastKey = null;
+    this.countdown = 0; this.endHold = 0;
+    this.input = { steer:0, brake:0 };
+    this.raw   = { steer:0, brake:0 };
+    this.keys = Object.create(null);
+    this.pointers = new Map();
+
+    Stats.load();
+    this.resize();
+    this.bind();
+    this.paintMenu();
+    this.last = performance.now();
+    requestAnimationFrame(t=>this.loop(t));
+  }
+
+  /* --- viewport. Uses visualViewport so the browser's own chrome sliding in
+     and out never re-lays-out the game underneath your thumb. And because the
+     world is virtual, a resize changes the CAMERA only — never the physics. --- */
+  resize(){
+    const vv = window.visualViewport;
+    this.W = Math.round(vv ? vv.width  : innerWidth);
+    this.H = Math.round(vv ? vv.height : innerHeight);
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    this.canvas.width  = Math.round(this.W * dpr);
+    this.canvas.height = Math.round(this.H * dpr);
+    this.canvas.style.width  = this.W + 'px';
+    this.canvas.style.height = this.H + 'px';
+    this.g.setTransform(dpr,0,0,dpr,0,0);
+    this.view = makeView(this.W, this.H);
+  }
+
+  bind(){
+    const onResize = ()=>this.resize();
+    addEventListener('resize', onResize);
+    if(window.visualViewport){
+      visualViewport.addEventListener('resize', onResize);
+      visualViewport.addEventListener('scroll', onResize);
+    }
+    addEventListener('orientationchange', ()=>setTimeout(onResize, 120));
+
+    addEventListener('keydown', e=>{
+      if(['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Space'].includes(e.code)) e.preventDefault();
+      this.keys[e.code]=true;
+      if(e.code==='Enter' && this.state==='result') this.next();
+      if(e.code==='KeyM') this.toggleSound();
+    }, {passive:false});
+    addEventListener('keyup', e=>{ this.keys[e.code]=false; });
+
+    /* --- THUMB ZONES. No buttons. Nothing to hunt for, nothing that can
+       drift under a toolbar, and steering is ANALOG — which is the only way
+       the "discipline" score means anything on a phone. Left half of the
+       screen: press anywhere and drag to steer. Right half: hold to lift. --- */
+    const cv = this.canvas;
+    const onDown = (e)=>{
+      cv.setPointerCapture(e.pointerId);
+      this.audio.start();
+      const left = e.clientX < this.W * 0.5;
+      this.pointers.set(e.pointerId, { left, x0: e.clientX });
+      if(!left) this.raw.brake = 1;
+      this.showZones = 0.9;
+    };
+    const onMove = (e)=>{
+      const p = this.pointers.get(e.pointerId); if(!p) return;
+      if(p.left) this.raw.steer = clamp((e.clientX - p.x0) / 62, -1, 1);
+    };
+    const onUp = (e)=>{
+      const p = this.pointers.get(e.pointerId); if(!p) return;
+      this.pointers.delete(e.pointerId);
+      if(p.left) this.raw.steer = 0;
+      else if(![...this.pointers.values()].some(q=>!q.left)) this.raw.brake = 0;
+    };
+    cv.addEventListener('pointerdown', onDown);
+    cv.addEventListener('pointermove', onMove);
+    cv.addEventListener('pointerup', onUp);
+    cv.addEventListener('pointercancel', onUp);
+
+    document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('.mode').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); this.mode = b.dataset.mode;
+    }));
+    $('startBtn').onclick   = ()=>{ this.audio.start(); this.sessionScore=0; this.streak=0; this.next(); };
+    $('nextBtn').onclick    = ()=>this.next();
+    $('retryBtn').onclick   = ()=>this.begin(this.drill);
+    $('menuBtn').onclick    = ()=>this.toMenu();
+    $('soundBtn').onclick   = ()=>this.toggleSound();
+    $('statsBtn').onclick   = ()=>{ this.paintStats(); this.show('statsScreen'); };
+    $('statsBack').onclick  = ()=>this.toMenu();
+    $('resetBtn').onclick   = ()=>{ if(confirm('Erase all recorded drills?')){ Stats.reset(); this.paintStats(); this.paintMenu(); } };
+  }
+
+  toggleSound(){ $('soundBtn').textContent = this.audio.toggle() ? '🔊' : '🔇'; }
+
+  show(id){
+    for(const s of ['menuScreen','briefScreen','resultScreen','statsScreen'])
+      $(s).classList.toggle('hidden', s !== id);
+    $('hud').classList.toggle('hidden', id !== null);
+  }
+  hideAll(){
+    for(const s of ['menuScreen','briefScreen','resultScreen','statsScreen']) $(s).classList.add('hidden');
+    $('hud').classList.remove('hidden');
+  }
+  toMenu(){ this.state='menu'; this.world=null; this.paintMenu(); this.show('menuScreen'); }
+
+  paintMenu(){
+    const d = Stats.data;
+    $('menuRuns').textContent = d.runs;
+    $('menuBest').textContent = d.best;
+    const rts = ARCH_KEYS.map(k=>Stats.medianRT(k)).filter(x=>x!=null);
+    $('menuRT').textContent = rts.length ? Math.round(rts.reduce((a,b)=>a+b,0)/rts.length) + 'ms' : '—';
+  }
+
+  /* --- drill selection + generation --- */
+  next(){
+    const key = chooseArch(this.lastKey);
+    let drill = null, guard = 0;
+    while(!drill && guard++ < 12){
+      drill = generateDrill(key, (Math.random()*1e9)|0, { leadScale: MODES[this.mode].lead });
+    }
+    if(!drill){ drill = generateDrill('accordion', 12345, { leadScale: 1 }); }
+    this.lastKey = key;
+    this.begin(drill);
+  }
+
+  begin(drill){
+    this.drill = drill;
+    this.world = new World(drill);
+    this.commit = null;
+    this.particles = [];
+    this.raw.steer = 0; this.raw.brake = 0;
+    this.input.steer = 0; this.input.brake = 0;
+    this.countdown = 2.6;
+    this.endHold = 0;
+    this.state = 'brief';
+    /* NO NAME. NO HINT. NO SUBTITLE. The label IS the classification, and
+       classifying the situation is the skill being trained. It is revealed
+       afterwards, as a name for a pattern you already saw. */
+    this.show('briefScreen');
+    $('briefLane').textContent = ['LEFT','CENTER','RIGHT'][Math.round(drill.playerLane)] || 'CENTER';
+    $('briefMode').textContent = MODES[this.mode].label;
+  }
+
+  commitResponse(type, t){
+    if(this.commit || this.state !== 'run') return;
+    this.commit = { type, t };
+    const pre = t < this.drill.cueAt;
+    this.audio.tone(pre ? 240 : 760, 0.08, pre ? 'triangle' : 'sine', 0.09);
+  }
+
+  step(dt){
+    const w = this.world, d = this.drill;
+
+    // input smoothing (light — the drag should feel direct)
+    this.input.steer = approach(this.input.steer, this.raw.steer, dt * 11);
+    this.input.brake = approach(this.input.brake, this.raw.brake, dt * (this.raw.brake ? 9 : 6));
+
+    const kL = this.keys.ArrowLeft || this.keys.KeyA;
+    const kR = this.keys.ArrowRight || this.keys.KeyD;
+    const kB = this.keys.ArrowDown || this.keys.KeyS || this.keys.Space;
+    if(kL || kR) this.input.steer = approach(this.input.steer, (kR?1:0)-(kL?1:0), dt*6);
+    if(kB) this.input.brake = approach(this.input.brake, 1, dt*9);
+
+    const before = w.t;
+    w.step(dt, this.input);
+
+    // first committed response
+    if(!this.commit){
+      if(this.input.brake >= 0.30) this.commitResponse('brake', w.t);
+      else if(Math.abs(this.input.steer) >= 0.45) this.commitResponse(this.input.steer < 0 ? 'left' : 'right', w.t);
+    }
+
+    this.scroll += w.player.speed * dt * 1.9;
+
+    // smoke off any car flagged by the drill script
+    if(!this.reduced){
+      for(const c of w.cars){
+        if(c.smoke && Math.random() < dt * 9){
+          this.particles.push(new P(this.view.x(c.lane) - 8, this.view.y(c.y) + 22, 'smoke'));
+        }
+      }
+    }
+    for(let i=this.particles.length-1;i>=0;i--){
+      this.particles[i].step(dt);
+      if(this.particles[i].life <= 0) this.particles.splice(i,1);
+    }
+
+    this.audio.engine(w.player.speed, w.player.brake);
+
+    if(w.crashed && before < w.t && this.endHold === 0){
+      this.audio.crash();
+      if(!this.reduced){
+        const cc = w.car(w.crashCar);
+        for(let i=0;i<26;i++) this.particles.push(new P(this.view.x(cc.lane), this.view.y(cc.y), 'spark'));
+      }
+      this.endHold = 0.85;
+    }
+    if(this.endHold > 0){
+      this.endHold -= dt;
+      if(this.endHold <= 0) this.finish();
+      return;
+    }
+    if(w.t >= d.duration) this.finish();
+  }
+
+  finish(){
+    const cls = classify(this.drill, this.commit, this.world);
+    const sc  = scoreRun(this.drill, cls, this.world);
+    Stats.record(this.drill, cls, sc);
+    this.sessionScore += sc.points;
+    this.streak = cls.correct ? this.streak + 1 : 0;
+    this.state = 'result';
+    this.paintResult(cls, sc);
+    this.show('resultScreen');
+  }
+
+  /* ---------- RESULT: this is now the entire teaching surface ---------- */
+  paintResult(cls, sc){
+    const d = this.drill;
+
+    $('rKicker').textContent =
+      d.isCatch ? (cls.correct ? 'HELD' : 'FALSE ALARM')
+      : cls.correct ? 'CLEAN READ'
+      : cls.collision ? 'CONTACT'
+      : cls.missed ? 'NO RESPONSE' : 'MISREAD';
+    $('rKicker').className = 'kicker ' + (cls.correct ? 'good' : 'bad');
+
+    /* THE REVEAL. Name the pattern only after they've had to read it cold. */
+    $('rName').textContent   = d.isCatch ? d.label + ' — feint' : d.label;
+    $('rLesson').textContent = d.isCatch
+      ? 'The cue fired and then resolved. Nothing was coming. Reading a tell is only half of it — you also have to let it finish.'
+      : d.lesson;
+
+    $('rRead').textContent = sc.read;
+    $('rLat').textContent  = cls.reactionMs == null ? '—'
+                           : (cls.reactionMs < 0 ? '' : '+') + cls.reactionMs + 'ms';
+    $('rMom').textContent  = sc.momentum;
+    $('rDis').textContent  = sc.discipline;
+    $('rPts').textContent  = sc.points;
+    $('rNote').textContent = sc.label;
+
+    const med = Stats.medianRT(d.key);
+    $('rLatNote').textContent = cls.reactionMs == null ? 'from cue onset'
+      : cls.reactionMs < 0 ? 'you moved BEFORE the cue existed'
+      : med ? `from cue onset · your median here: ${med}ms` : 'from cue onset';
+
+    $('sessScore').textContent = this.sessionScore;
+    $('streak').textContent = '×' + this.streak;
+
+    this.drawTimeline(cls);
+    this.drawCueFrame();
+  }
+
+  /* Timeline: cue onset -> hazard -> where you actually moved. */
+  drawTimeline(cls){
+    const c = $('tl'), g = c.getContext('2d');
+    const dpr = Math.min(devicePixelRatio||1,2);
+    const W = c.clientWidth, H = 46;
+    c.width = W*dpr; c.height = H*dpr; c.style.height = H+'px';
+    g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,W,H);
+
+    const d = this.drill;
+    const T = d.duration;
+    const X = t => 10 + (t/T) * (W-20);
+    const y = 26;
+
+    g.strokeStyle='rgba(255,255,255,.14)'; g.lineWidth=3;
+    g.beginPath(); g.moveTo(10,y); g.lineTo(W-10,y); g.stroke();
+
+    // usable window: cue -> hazard
+    if(!d.isCatch){
+      g.strokeStyle='rgba(78,230,207,.30)'; g.lineWidth=9;
+      g.beginPath(); g.moveTo(X(d.cueAt), y); g.lineTo(X(d.hazardAt), y); g.stroke();
+    } else {
+      g.strokeStyle='rgba(255,212,95,.24)'; g.lineWidth=9;
+      g.beginPath(); g.moveTo(X(d.cueAt), y); g.lineTo(X(Math.min(T,d.cueAt+0.85)), y); g.stroke();
+    }
+
+    const tick=(t,col,lab)=>{
+      const x=X(t);
+      g.strokeStyle=col; g.lineWidth=2;
+      g.beginPath(); g.moveTo(x,y-9); g.lineTo(x,y+9); g.stroke();
+      g.fillStyle=col; g.font='800 9px Inter, system-ui, sans-serif'; g.textAlign='center';
+      g.fillText(lab, x, y-14);
+    };
+    tick(d.cueAt, '#4ee6cf', 'CUE');
+    if(!d.isCatch) tick(d.hazardAt, '#ff5c6a', 'HAZARD');
+
+    if(cls.commit){
+      const x = X(cls.commit.t);
+      g.fillStyle = cls.correct ? '#7ef0a4' : '#ff9f43';
+      g.beginPath(); g.arc(x, y, 6, 0, Math.PI*2); g.fill();
+      g.strokeStyle='#06121a'; g.lineWidth=2; g.stroke();
+      g.fillStyle = cls.correct ? '#7ef0a4' : '#ff9f43';
+      g.font='800 9px Inter, system-ui, sans-serif'; g.textAlign='center';
+      g.fillText('YOU', x, y+22);
+    } else {
+      g.fillStyle='rgba(255,255,255,.4)'; g.font='800 9px Inter, system-ui, sans-serif';
+      g.textAlign='right'; g.fillText('no input', W-12, y+22);
+    }
+  }
+
+  /* Cue replay: re-simulate the drill headless to the exact instant the cue
+     fired, and draw that frame. This is the thing you were never shown. */
+  drawCueFrame(){
+    const c = $('cue'), g = c.getContext('2d');
+    const dpr = Math.min(devicePixelRatio||1,2);
+    const W = c.clientWidth, H = 190;
+    c.width=W*dpr; c.height=H*dpr; c.style.height=H+'px';
+    g.setTransform(dpr,0,0,dpr,0,0);
+
+    const d = this.drill;
+    const at = Math.min(d.cueAt + 0.28, d.duration);
+    const w = simulate(d, ()=>({steer:0,brake:0}), at);
+
+    const v = makeView(W, H*1.0);
+    // zoom the replay so the pack is legible in a small box
+    const vv = { scale: v.scale*1.0, cx: W/2,
+                 x:(l)=> W/2 + (l-1)*WORLD.LANE_W*v.scale,
+                 y:(vy)=> (vy - 120) * v.scale * 1.0 };
+    drawRoad(g, vv, W, H, 0, true);
+    for(const car of w.cars) drawCar(g, vv, car, { glow: 1 });
+    drawPlayer(g, vv, w.player, W, H);
+
+    const cc = w.car(d.cueCar);
+    if(cc){
+      const x = vv.x(cc.lane), y = vv.y(cc.y);
+      g.strokeStyle='#4ee6cf'; g.lineWidth=2; g.setLineDash([4,4]);
+      g.beginPath(); g.arc(x,y, 34, 0, Math.PI*2); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle='#4ee6cf'; g.font='900 10px Inter, system-ui, sans-serif';
+      g.textAlign='center';
+      g.fillText('THE TELL', x, y - 42);
+    }
+    g.fillStyle='rgba(6,14,20,.85)';
+    g.fillRect(0, H-20, W, 20);
+    g.fillStyle='rgba(255,255,255,.62)'; g.font='700 10px Inter, system-ui, sans-serif';
+    g.textAlign='left';
+    g.fillText(`cue onset · t=${d.cueAt.toFixed(2)}s`, 10, H-6);
+  }
+
+  paintStats(){
+    const rows = ARCH_KEYS.map(k=>{
+      const a = Stats.data.arch[k];
+      const hr = Stats.hitRate(k), fa = Stats.faRate(k), rt = Stats.medianRT(k);
+      const pct = x => x==null ? '—' : Math.round(x*100)+'%';
+      const bar = x => x==null ? 0 : Math.round(x*100);
+      return `<div class="srow">
+        <div class="sname">${ARCHETYPES[k].label}<span>${a.n} run${a.n===1?'':'s'}</span></div>
+        <div class="sbar"><i style="width:${bar(hr)}%"></i></div>
+        <div class="sval">${pct(hr)}</div>
+        <div class="sval fa">${pct(fa)}</div>
+        <div class="sval">${rt==null?'—':rt+'ms'}</div>
+      </div>`;
+    }).join('');
+    $('statsBody').innerHTML = rows;
+  }
+
+  loop(now){
+    const dt = Math.min(0.033, (now - this.last)/1000);
+    this.last = now;
+
+    if(this.state === 'brief'){
+      this.countdown -= dt;
+      const n = Math.ceil(this.countdown);
+      $('count').textContent = n > 0 ? n : 'GO';
+      if(this.countdown <= 0){ this.state = 'run'; this.hideAll(); }
+    }
+    if(this.state === 'run') this.step(dt);
+
+    this.render();
+    requestAnimationFrame(t=>this.loop(t));
+  }
+
+  render(){
+    const g = this.g, W = this.W, H = this.H;
+    const v = this.view;
+    const w = this.world;
+
+    drawRoad(g, v, W, H, this.scroll, this.reduced);
+
+    if(w){
+      const glow = MODES[this.mode].glow;
+      for(const c of w.cars) if(c.y < WORLD.H + 300) drawCar(g, v, c, { glow });
+      drawPlayer(g, v, w.player, W, H);
+      for(const p of this.particles) p.draw(g);
+
+      $('spd').textContent = Math.round(w.player.speed);
+      $('sessScore').textContent = this.sessionScore;
+      $('streak').textContent = '×' + this.streak;
+    }
+
+    // thumb-zone guides — faint, fixed to the canvas, cannot drift
+    if(this.state === 'run'){
+      g.save();
+      g.globalAlpha = 0.16;
+      g.strokeStyle = '#4ee6cf'; g.lineWidth = 1;
+      g.setLineDash([3,7]);
+      g.beginPath(); g.moveTo(W/2, H*0.62); g.lineTo(W/2, H); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle='#8fa4b0'; g.font='800 9px Inter, system-ui, sans-serif';
+      g.textAlign='center';
+      g.fillText('DRAG TO STEER', W*0.25, H - 16);
+      g.fillText('HOLD TO LIFT',  W*0.75, H - 16);
+      g.restore();
+
+      // live steer indicator
+      const sx = W*0.25 + this.input.steer * 46;
+      g.save(); g.globalAlpha = 0.55;
+      g.fillStyle = '#4ee6cf';
+      g.beginPath(); g.arc(sx, H-38, 5, 0, Math.PI*2); g.fill();
+      if(this.input.brake > 0.05){
+        g.fillStyle = `rgba(255,92,106,${0.25 + this.input.brake*0.5})`;
+        g.beginPath(); g.arc(W*0.75, H-38, 6 + this.input.brake*5, 0, Math.PI*2); g.fill();
+      }
+      g.restore();
+    }
+  }
+}
+
+window.addEventListener('load', ()=>{ window.__game = new Game(); });
+
+</script>
+</body>
+</html>
